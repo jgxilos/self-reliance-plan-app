@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SelfReliancePath: Self-Reliance Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Top Header Bar -->
+        <header class="top-bar no-print">
+            <div class="top-bar-inner">
+                <div class="brand-group">
+                    <span class="brand-mark" aria-hidden="true"></span>
+                    <div class="brand-titles">
+                        <strong class="brand-name">SelfReliancePath</strong>
+                        <span class="brand-divider">|</span>
+                        <span class="brand-context">Self-Reliance Plan</span>
+                    </div>
+                </div>
+
+                <div class="top-bar-meta">
+                    <span class="autosave-pill" id="autosave-indicator">
+                        Your work is saved automatically ✓
+                    </span>
+                    <button type="button" id="btn-print-view" class="btn-outline-sm">
+                        Print / PDF View
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Two-Column Workspace -->
+        <div class="workspace-container">
+            <!-- Left Sidebar -->
+            <aside class="sidebar no-print" aria-label="Plan progress and guidance">
+                <!-- General Progress Card -->
+                <section class="side-card">
+                    <div class="side-card-head">
+                        <span class="side-eyebrow">GENERAL PROGRESS</span>
+                        <span class="progress-badge" id="sidebar-progress-percent">14%</span>
+                    </div>
+                    <p class="side-subtext" id="sidebar-sections-count">1 of 7 stages initialized</p>
+
+                    <div class="mini-progress-track">
+                        <div class="mini-progress-fill" id="sidebar-progress-fill" style="width: 14%;"></div>
+                    </div>
+
+                    <ol class="step-stepper" id="step-stepper">
+                        <li class="stepper-item active" data-step="0">
+                            <span class="stepper-num">0</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">IN PROGRESS</span>
+                                <strong class="stepper-title">Step 0: Member and Household Information</strong>
+                            </div>
+                        </li>
+                        <li class="stepper-item" data-step="1">
+                            <span class="stepper-num">1</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">PENDING</span>
+                                <strong class="stepper-title">Step 1: What Needs Do I Have?</strong>
+                            </div>
+                        </li>
+                        <li class="stepper-item" data-step="2">
+                            <span class="stepper-num">2</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">PENDING</span>
+                                <strong class="stepper-title">Step 2: Monthly Income and Expenses</strong>
+                            </div>
+                        </li>
+                        <li class="stepper-item" data-step="3">
+                            <span class="stepper-num">3</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">PENDING</span>
+                                <strong class="stepper-title">Step 3: What Other Resources Do I Have?</strong>
+                            </div>
+                        </li>
+                        <li class="stepper-item" data-step="4">
+                            <span class="stepper-num">4</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">PENDING</span>
+                                <strong class="stepper-title">Step 4: Personal or Family Self-Reliance Plan</strong>
+                            </div>
+                        </li>
+                        <li class="stepper-item" data-step="5">
+                            <span class="stepper-num">5</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">PENDING</span>
+                                <strong class="stepper-title">Step 5: Work or Service in Return</strong>
+                            </div>
+                        </li>
+                        <li class="stepper-item" data-step="6">
+                            <span class="stepper-num">6</span>
+                            <div class="stepper-info">
+                                <span class="stepper-state">FINAL</span>
+                                <strong class="stepper-title">Commitment and Signatures</strong>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+
+                <!-- Reflection and Prudence Card -->
+                <section class="side-card">
+                    <h2 class="side-card-title">REFLECTION &amp; PRUDENCE</h2>
+                    <blockquote class="reflection-quote" id="reflection-quote">
+                        “Plan carefully and work diligently toward steady improvement, building strength step by step.”
+                    </blockquote>
+                    <div class="principle-box">
+                        <strong id="principle-heading">Principle of self-reliance</strong>
+                        <p id="principle-body">
+                            Honest assessment of current needs, income, and resources lays a clear foundation for
+                            lasting stability.
+                        </p>
+                    </div>
+                    <button type="button" id="btn-new-tip" class="btn-link-center">
+                        ↻ Get new tip
+                    </button>
+                </section>
+
+                <!-- Self-Reliance Specialist Card -->
+                <section class="side-card" id="specialist-card">
+                    <span class="side-eyebrow">SELF-RELIANCE SPECIALIST</span>
+                    <strong class="specialist-name" id="specialist-name">Assigned Ward Specialist</strong>
+                    <p class="side-subtext">Available to help coordinate goals, budget review, and next steps.</p>
+                    <div class="specialist-actions">
+                        <button type="button" id="btn-call-specialist" class="btn-soft">Call</button>
+                        <button type="button" id="btn-msg-specialist" class="btn-soft-accent">Message</button>
+                    </div>
+                </section>
+
+                <!-- File Status Card (Highlighted on Step 6) -->
+                <section class="side-card" id="file-status-card">
+                    <div class="side-card-head">
+                        <span class="side-eyebrow">FILE STATUS</span>
+                        <span class="status-tag-ready" id="file-status-badge">In Progress</span>
+                    </div>
+                    <dl class="meta-kv-list">
+                        <div>
+                            <dt>Completed sections</dt>
+                            <dd id="file-sections-val">0 of 6 steps</dd>
+                        </div>
+                        <div>
+                            <dt>Projected monthly balance</dt>
+                            <dd id="file-balance-val">$0.00 / mo</dd>
+                        </div>
+                        <div>
+                            <dt>Agreed service</dt>
+                            <dd id="file-service-val">Pending</dd>
+                        </div>
+                    </dl>
+                </section>
+            </aside>
+
+            <!-- Right Main Workspace -->
+            <main class="main-workspace" id="main-workspace">
+                <!-- STEP 0 -->
+                <section class="step-view active" id="view-step-0" data-step="0">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">ACTIVE FORM</span>
+                                <span class="view-meta-tag">Confidential Welfare Record</span>
+                            </div>
+                            <h1>Step 0: Member and Household Information</h1>
+                            <p class="view-description">
+                                Record personal identification details, household composition, local unit information,
+                                and current work status.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">PRIMARY MEMBER</span>
+                                    <strong id="ctx-member-0">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">REGISTRATION DATE</span>
+                                    <strong id="ctx-date-0">—</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong id="ctx-unit-0">Not specified</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">STAKE / DISTRICT</span>
+                                    <strong id="ctx-stake-0">Not specified</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 1 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">1</span>
+                                <h2>Personal and Identification Details</h2>
+                            </div>
+                            <div class="grid-3">
+                                <div class="input-group span-2">
+                                    <label for="s0-fullname">Full Name *</label>
+                                    <input type="text" id="s0-fullname" placeholder="e.g., Carlos E. Mendoza" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-marital">Marital Status</label>
+                                    <select id="s0-marital">
+                                        <option value="">Select status</option>
+                                        <option value="Single">Single</option>
+                                        <option value="Married">Married</option>
+                                        <option value="Widowed">Widowed</option>
+                                        <option value="Divorced">Divorced</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-dob">Date of Birth</label>
+                                    <input type="date" id="s0-dob" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-age">Age</label>
+                                    <input type="number" id="s0-age" min="0" max="120" placeholder="0" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-phone">Mobile Phone</label>
+                                    <input type="tel" id="s0-phone" placeholder="(555) 234-5678" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-email">Email Address</label>
+                                    <input type="email" id="s0-email" placeholder="name@example.com" />
+                                </div>
+                                <div class="input-group span-2">
+                                    <label for="s0-address">Current Residential Address</label>
+                                    <input type="text" id="s0-address"
+                                        placeholder="Street address, city, state, ZIP code" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 2 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">2</span>
+                                <h2>Household Structure and Dependents</h2>
+                                <span class="block-pill" id="household-count-pill">Total: 1 person</span>
+                            </div>
+                            <div class="table-wrap">
+                                <table class="grid-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Household Member Name</th>
+                                            <th>Relationship</th>
+                                            <th>Age</th>
+                                            <th>Occupation / School</th>
+                                            <th class="th-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="s0-household-tbody">
+                                        <tr>
+                                            <td><input type="text" class="cell-input hh-name"
+                                                    placeholder="Member name" /></td>
+                                            <td><input type="text" class="cell-input hh-rel"
+                                                    placeholder="Spouse / Child" /></td>
+                                            <td><input type="number" class="cell-input hh-age" min="0" max="120"
+                                                    placeholder="0" /></td>
+                                            <td><input type="text" class="cell-input hh-occ"
+                                                    placeholder="Job or school grade" /></td>
+                                            <td class="th-center">
+                                                <button type="button" class="btn-row-del" title="Remove row">✕</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" id="btn-add-household" class="btn-add-inline">
+                                + Add household member or dependent
+                            </button>
+                        </div>
+
+                        <!-- Block 3 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">3</span>
+                                <h2>Local Unit and Support Network</h2>
+                            </div>
+                            <div class="grid-3">
+                                <div class="input-group">
+                                    <label for="s0-stake">Stake / District</label>
+                                    <input type="text" id="s0-stake" placeholder="Stake name" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-ward">Ward / Branch</label>
+                                    <input type="text" id="s0-ward" placeholder="Ward or branch name" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-start-date">Plan Start Date</label>
+                                    <input type="date" id="s0-start-date" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-bishop">Bishop / Branch President</label>
+                                    <input type="text" id="s0-bishop" placeholder="Leader full name" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-bishop-phone">Leader Contact</label>
+                                    <input type="tel" id="s0-bishop-phone" placeholder="(555) 987-6543" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-specialist">Assigned Specialist / Mentor</label>
+                                    <input type="text" id="s0-specialist" placeholder="Specialist name" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 4 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">4</span>
+                                <h2>Current Employment and Vocational Status</h2>
+                            </div>
+                            <div class="grid-2">
+                                <div class="input-group">
+                                    <label for="s0-emp-status">Primary Employment Status</label>
+                                    <select id="s0-emp-status">
+                                        <option value="">Select employment status</option>
+                                        <option value="Full-time employee">Full-time employee</option>
+                                        <option value="Part-time employee">Part-time employee</option>
+                                        <option value="Self-employed / Trades">Self-employed / Trades</option>
+                                        <option value="Unemployed / Seeking work">Unemployed / Seeking work</option>
+                                        <option value="Student / Homemaker / Retired">Student / Homemaker / Retired
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-profession">Primary Trade or Profession</label>
+                                    <input type="text" id="s0-profession"
+                                        placeholder="e.g., Residential carpentry, office support" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-experience">Years of Experience</label>
+                                    <input type="text" id="s0-experience" placeholder="e.g., 8 years" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s0-education">Education or Technical Training</label>
+                                    <input type="text" id="s0-education"
+                                        placeholder="e.g., Associate degree, trade certificate" />
+                                </div>
+                                <div class="input-group span-2">
+                                    <label for="s0-challenge">Brief Summary of Current Self-Reliance Challenge</label>
+                                    <textarea id="s0-challenge" rows="3"
+                                        placeholder="Describe key work, budget, or stability challenges..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step Footer -->
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="0" disabled>
+                                ← Start / Overview
+                            </button>
+                            <span class="step-saved-note">Draft synced in session</span>
+                            <button type="button" class="btn-nav-next" data-next="1">
+                                Next: Step 1 (What Needs Do I Have?) →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 1 -->
+                <section class="step-view" id="view-step-1" data-step="1">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">ACTIVE FORM · NEEDS ASSESSMENT</span>
+                                <span class="view-meta-tag">Confidential Welfare Record</span>
+                            </div>
+                            <h1>Step 1: What Needs Do I Have?</h1>
+                            <p class="view-description">
+                                Immediate needs may include food, clothing, medical or emotional care, or housing.
+                                Longer-term needs may include education or better employment.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">MEMBER</span>
+                                    <strong class="sync-member-name">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">DATE</span>
+                                    <strong class="sync-date">Not set</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong class="sync-unit">Not specified</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">HOUSEHOLD</span>
+                                    <strong class="sync-household">1 person</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block A: Immediate Needs -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num accent-num">A</span>
+                                <h2>Immediate Needs</h2>
+                                <span class="block-pill warn-pill">Priority 0–15 days</span>
+                            </div>
+                            <p class="block-hint">Select key immediate areas and enter estimated short-term dollar
+                                amounts.</p>
+
+                            <div class="chip-grid" id="immediate-chips">
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="imm-chip" value="Basic Food Order" />
+                                    <span>Basic Food Order</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="imm-chip" value="Rent / Utilities Extension" />
+                                    <span>Rent / Utilities Extension</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="imm-chip" value="Medical / Dental Care" />
+                                    <span>Medical / Dental Care</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="imm-chip" value="Clothing & School Supplies" />
+                                    <span>Clothing &amp; School Supplies</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="imm-chip" value="Emotional / Family Support" />
+                                    <span>Emotional / Family Support</span>
+                                </label>
+                            </div>
+
+                            <div class="input-group mt-16">
+                                <label for="s1-imm-desc">Detailed description of immediate needs</label>
+                                <textarea id="s1-imm-desc" rows="3"
+                                    placeholder="Explain immediate household needs and urgency..."></textarea>
+                            </div>
+
+                            <div class="grid-3 mt-16">
+                                <div class="input-group">
+                                    <label for="s1-imm-food">Food &amp; groceries ($ USD)</label>
+                                    <input type="number" step="0.01" min="0" class="s1-calc" id="s1-imm-food"
+                                        value="0" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s1-imm-housing">Housing &amp; utilities ($ USD)</label>
+                                    <input type="number" step="0.01" min="0" class="s1-calc" id="s1-imm-housing"
+                                        value="0" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s1-imm-health">Health &amp; other immediate ($ USD)</label>
+                                    <input type="number" step="0.01" min="0" class="s1-calc" id="s1-imm-health"
+                                        value="0" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block B: Longer-Term Needs -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">B</span>
+                                <h2>Longer-Term Needs</h2>
+                                <span class="block-pill">Horizon 1–3+ months</span>
+                            </div>
+                            <p class="block-hint">Select longer-term self-reliance pathways and describe vocational or
+                                educational goals.</p>
+
+                            <div class="chip-grid" id="longterm-chips">
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="lt-chip" value="Steady Employment" />
+                                    <span>Steady Employment</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="lt-chip" value="Starting / Growing a Business" />
+                                    <span>Starting / Growing a Business</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="lt-chip" value="Vocational / Job Training" />
+                                    <span>Vocational / Job Training</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="lt-chip" value="Work Tools & Equipment" />
+                                    <span>Work Tools &amp; Equipment</span>
+                                </label>
+                                <label class="chip-toggle">
+                                    <input type="checkbox" class="lt-chip" value="Budgeting & Debt Reduction" />
+                                    <span>Budgeting &amp; Debt Reduction</span>
+                                </label>
+                            </div>
+
+                            <div class="input-group mt-16">
+                                <label for="s1-lt-desc">Detailed description of longer-term needs</label>
+                                <textarea id="s1-lt-desc" rows="3"
+                                    placeholder="Describe training, employment, tools, or financial stability goals..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Preliminary Summary Banner -->
+                        <div class="diagnosis-banner">
+                            <div class="diagnosis-top">
+                                <div>
+                                    <span class="diagnosis-eyebrow">PRELIMINARY NEEDS SUMMARY</span>
+                                    <h3>Needs Diagnostic Overview</h3>
+                                </div>
+                                <button type="button" id="btn-jump-step2" class="btn-light-pill">
+                                    Go to Step 2 →
+                                </button>
+                            </div>
+                            <div class="diagnosis-metrics">
+                                <div class="metric-box">
+                                    <span>Immediate Gap</span>
+                                    <strong id="s1-total-gap">$0.00</strong>
+                                    <small>Estimated short-term need</small>
+                                </div>
+                                <div class="metric-box">
+                                    <span>Immediate Areas</span>
+                                    <strong id="s1-imm-count">0 selected</strong>
+                                    <small>Short-term priorities</small>
+                                </div>
+                                <div class="metric-box">
+                                    <span>Long-Term Areas</span>
+                                    <strong id="s1-lt-count">0 selected</strong>
+                                    <small>Growth &amp; stability tracks</small>
+                                </div>
+                                <div class="metric-box">
+                                    <span>Budget Readiness</span>
+                                    <strong>Ready for Step 2</strong>
+                                    <small>Income &amp; expense review</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="0">
+                                ← Previous: Step 0
+                            </button>
+                            <span class="step-saved-note">Needs draft updated</span>
+                            <button type="button" class="btn-nav-next" data-next="2">
+                                Next: Step 2 (Income &amp; Expenses) →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 2 -->
+                <section class="step-view" id="view-step-2" data-step="2">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">ACTIVE FORM</span>
+                                <span class="view-meta-tag">USD Monthly Cash Flow</span>
+                            </div>
+                            <h1>Step 2: Monthly Income and Expenses</h1>
+                            <p class="view-description">
+                                Complete your monthly financial balance in U.S. dollars ($ USD). Totals and net balance
+                                update automatically.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">MEMBER</span>
+                                    <strong class="sync-member-name">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">DATE</span>
+                                    <strong class="sync-date">Not set</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong class="sync-unit">Not specified</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 1: Monthly Income -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">1</span>
+                                <h2>Monthly Income</h2>
+                                <span class="block-hint-right">Values in US dollars ($ USD)</span>
+                            </div>
+
+                            <div class="line-items">
+                                <div class="line-item-row">
+                                    <div class="line-item-label">
+                                        <strong>Household wages, salaries, and primary income</strong>
+                                        <small>Fixed paychecks, commissions, or pensions</small>
+                                    </div>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="inc-input" id="inc-wages"
+                                            value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="line-item-row">
+                                    <div class="line-item-label">
+                                        <strong>Other financial resources</strong>
+                                        <small>Family support, remittances, or rental income</small>
+                                    </div>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="inc-input" id="inc-other"
+                                            value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="line-item-row">
+                                    <div class="line-item-label">
+                                        <strong>Public or community assistance</strong>
+                                        <small>Benefits, food programs, or stipends</small>
+                                    </div>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="inc-input" id="inc-aid"
+                                            value="0" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="total-bar total-income">
+                                <span>TOTAL MONTHLY INCOME</span>
+                                <strong id="s2-total-income">$0.00 USD</strong>
+                            </div>
+                        </div>
+
+                        <!-- Block 2: Monthly Expenses -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">2</span>
+                                <h2>Monthly Expenses</h2>
+                                <span class="block-hint-right">Regular monthly estimate</span>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="input-group">
+                                    <label for="exp-tithes">Tithes and offerings</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-tithes"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-medical">Medical and pharmacy</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-medical"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-food">Food and groceries</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-food"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-edu">Education and school supplies</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-edu"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-housing">Housing (rent or mortgage)</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-housing"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-debt">Debt and loan payments</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-debt"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-utilities">Utilities (water, electricity, gas, phone)</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-utilities"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-other">Other (clothing, insurance, savings)</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-other"
+                                            value="0" />
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label for="exp-transport">Transportation</label>
+                                    <div class="currency-input">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="exp-input" id="exp-transport"
+                                            value="0" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="custom-expenses-list" class="custom-expenses-list"></div>
+
+                            <button type="button" id="btn-add-expense" class="btn-add-inline">
+                                + Add additional expense row
+                            </button>
+
+                            <div class="total-bar total-expense">
+                                <span>TOTAL MONTHLY EXPENSES</span>
+                                <strong id="s2-total-expenses">$0.00 USD</strong>
+                            </div>
+                        </div>
+
+                        <!-- Block 3: Analysis and Adjustments -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">3</span>
+                                <h2>Self-Reliance Analysis and Adjustments</h2>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="s2-adjustments">Expenses that can be reduced or eliminated</label>
+                                <textarea id="s2-adjustments" rows="3"
+                                    placeholder="List non-essential spending or adjustments to strengthen your monthly balance..."></textarea>
+                            </div>
+
+                            <div class="net-balance-card" id="s2-net-card">
+                                <div>
+                                    <span class="net-label">ESTIMATED MONTHLY BALANCE</span>
+                                    <strong>Net Income − Total Expenses</strong>
+                                    <small id="s2-balance-note">Balanced budget</small>
+                                </div>
+                                <div class="net-amount-group">
+                                    <span class="net-pill" id="s2-balance-pill">Balanced</span>
+                                    <strong id="s2-net-amount">$0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="1">
+                                ← Previous: Step 1
+                            </button>
+                            <span class="step-saved-note">Budget totals calculated</span>
+                            <button type="button" class="btn-nav-next" data-next="3">
+                                Next: Step 3 (Other Resources) →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 3 -->
+                <section class="step-view" id="view-step-3" data-step="3">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">ACTIVE FORM</span>
+                                <span class="view-meta-tag">Confidential Welfare Record</span>
+                            </div>
+                            <h1>Step 3: What Other Resources Do I Have?</h1>
+                            <p class="view-description">
+                                Identify material reserves, family skills, support networks, and available community
+                                programs.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">MEMBER</span>
+                                    <strong class="sync-member-name">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">DATE</span>
+                                    <strong class="sync-date">Not set</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong class="sync-unit">Not specified</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 1 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">1</span>
+                                <h2>Material Resources and Family Reserves</h2>
+                            </div>
+
+                            <div class="resource-rows" id="s3-material-rows">
+                                <div class="resource-item">
+                                    <label class="res-check">
+                                        <input type="checkbox" class="res-active" />
+                                        <div>
+                                            <strong>Food storage and hygiene supplies</strong>
+                                            <small>Pantry staples, dry goods, and basic household items</small>
+                                        </div>
+                                    </label>
+                                    <div class="currency-input sm">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="res-val" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="resource-item">
+                                    <label class="res-check">
+                                        <input type="checkbox" class="res-active" />
+                                        <div>
+                                            <strong>Reserve fund or available savings</strong>
+                                            <small>Cash or account balance set aside for emergencies</small>
+                                        </div>
+                                    </label>
+                                    <div class="currency-input sm">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="res-val" value="0" />
+                                    </div>
+                                </div>
+
+                                <div class="resource-item">
+                                    <label class="res-check">
+                                        <input type="checkbox" class="res-active" />
+                                        <div>
+                                            <strong>Work tools or salable items</strong>
+                                            <small>Equipment, instruments, or items that can generate income</small>
+                                        </div>
+                                    </label>
+                                    <div class="currency-input sm">
+                                        <span>$</span>
+                                        <input type="number" step="0.01" min="0" class="res-val" value="0" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 2 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">2</span>
+                                <h2>Skills, Trades, and Income-Generating Capacity</h2>
+                            </div>
+
+                            <div class="table-wrap">
+                                <table class="grid-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Member / Skill or Trade</th>
+                                            <th>Time Availability</th>
+                                            <th>Monthly Potential ($ USD)</th>
+                                            <th class="th-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="s3-skills-tbody">
+                                        <tr>
+                                            <td><input type="text" class="cell-input skill-name"
+                                                    placeholder="e.g., Home repairs, tutoring, baking" /></td>
+                                            <td><input type="text" class="cell-input skill-avail"
+                                                    placeholder="e.g., Weekends (6 hrs/wk)" /></td>
+                                            <td><input type="number" step="0.01" min="0" class="cell-input skill-pot"
+                                                    value="0" /></td>
+                                            <td class="th-center">
+                                                <button type="button" class="btn-row-del" title="Remove row">✕</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" id="btn-add-skill" class="btn-add-inline">
+                                + Add another household skill or talent
+                            </button>
+                        </div>
+
+                        <!-- Block 3 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">3</span>
+                                <h2>Family Support Network and Community / Local Resources</h2>
+                            </div>
+
+                            <div class="grid-3">
+                                <div class="network-box">
+                                    <h4>Extended Family</h4>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Childcare or elder care help" /> Childcare or elder care help</label>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Shared housing or transportation" /> Shared housing or
+                                        transport</label>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Temporary family loan / support" /> Temporary family support</label>
+                                </div>
+                                <div class="network-box">
+                                    <h4>Local &amp; Community Programs</h4>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Public transit or utility assistance" /> Transit or utility
+                                        assistance</label>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Free job or technical courses" /> Free job or skills training</label>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Community food or school aid" /> Community food or school aid</label>
+                                </div>
+                                <div class="network-box">
+                                    <h4>Faith Community / Ward</h4>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Self-reliance group participation" /> Self-reliance group</label>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Ward employment &amp; networking" /> Employment networking</label>
+                                    <label><input type="checkbox" class="net-check"
+                                            value="Assigned financial / career mentor" /> Assigned mentor</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 4 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">4</span>
+                                <h2>Resource Summary and Application Plan</h2>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="s3-plan">How will you use these resources to reduce a deficit or build
+                                    self-reliance?</label>
+                                <textarea id="s3-plan" rows="3"
+                                    placeholder="Explain practical ways to apply reserves, skills, and support networks..."></textarea>
+                            </div>
+
+                            <div class="net-balance-card positive-card mt-16">
+                                <div>
+                                    <span class="net-label">IDENTIFIED RESOURCES SUMMARY</span>
+                                    <strong id="s3-summary-text">0 active items · $0.00 reserves</strong>
+                                    <small id="s3-potential-text">Estimated monthly earning potential: $0.00</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="2">
+                                ← Previous: Step 2
+                            </button>
+                            <span class="step-saved-note">Resources recorded</span>
+                            <button type="button" class="btn-nav-next" data-next="4">
+                                Next: Step 4 (Self-Reliance Plan) →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 4 -->
+                <section class="step-view" id="view-step-4" data-step="4">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">ACTIVE FORM</span>
+                                <span class="view-meta-tag">Action Roadmap</span>
+                            </div>
+                            <h1>Step 4: What Is My Personal or Family Plan to Become More Self-Reliant?</h1>
+                            <p class="view-description">
+                                Set clear short- and medium-term goals in education, employment, or finances with
+                                specific action steps and target dates.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">MEMBER</span>
+                                    <strong class="sync-member-name">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">DATE</span>
+                                    <strong class="sync-date">Not set</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong class="sync-unit">Not specified</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 1 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">1</span>
+                                <h2>Priority Self-Reliance Goals</h2>
+                            </div>
+
+                            <div class="grid-3">
+                                <div class="pillar-card">
+                                    <span class="pillar-tag">PILLAR 1 · WORK / INCOME</span>
+                                    <label for="s4-p1-goal">Income or job objective</label>
+                                    <input type="text" id="s4-p1-goal" placeholder="e.g., Increase monthly income" />
+                                    <label for="s4-p1-target" class="mt-10">Monthly income target ($)</label>
+                                    <input type="number" step="0.01" min="0" id="s4-p1-target" value="0" />
+                                </div>
+
+                                <div class="pillar-card">
+                                    <span class="pillar-tag">PILLAR 2 · TRAINING</span>
+                                    <label for="s4-p2-goal">Education or skill objective</label>
+                                    <input type="text" id="s4-p2-goal" placeholder="e.g., Complete technical course" />
+                                    <label for="s4-p2-time" class="mt-10">Estimated timeline</label>
+                                    <input type="text" id="s4-p2-time" placeholder="e.g., 6 weeks" />
+                                </div>
+
+                                <div class="pillar-card">
+                                    <span class="pillar-tag">PILLAR 3 · FINANCES</span>
+                                    <label for="s4-p3-goal">Savings or debt objective</label>
+                                    <input type="text" id="s4-p3-goal" placeholder="e.g., Build emergency fund" />
+                                    <label for="s4-p3-target" class="mt-10">Reserve target ($)</label>
+                                    <input type="number" step="0.01" min="0" id="s4-p3-target" value="0" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 2 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">2</span>
+                                <h2>Detailed Action Plan</h2>
+                            </div>
+
+                            <div class="table-wrap">
+                                <table class="grid-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Specific Action or Task</th>
+                                            <th>Owner</th>
+                                            <th>Target Date</th>
+                                            <th>Status</th>
+                                            <th class="th-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="s4-actions-tbody">
+                                        <tr>
+                                            <td><input type="text" class="cell-input act-task"
+                                                    placeholder="e.g., Track weekly expenses and set budget" /></td>
+                                            <td><input type="text" class="cell-input act-owner"
+                                                    placeholder="Person responsible" /></td>
+                                            <td><input type="date" class="cell-input act-date" /></td>
+                                            <td>
+                                                <select class="cell-input act-status">
+                                                    <option value="In Progress">In Progress</option>
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="Scheduled">Scheduled</option>
+                                                    <option value="Completed">Completed</option>
+                                                </select>
+                                            </td>
+                                            <td class="th-center">
+                                                <button type="button" class="btn-row-del" title="Remove row">✕</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="button" id="btn-add-action" class="btn-add-inline">
+                                + Add another action item to the plan
+                            </button>
+                        </div>
+
+                        <!-- Block 3 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">3</span>
+                                <h2>Mentorship and Shared Responsibility</h2>
+                            </div>
+
+                            <div class="grid-2">
+                                <div class="input-group">
+                                    <label for="s4-mentor">Mentor / Welfare Specialist Name</label>
+                                    <input type="text" id="s4-mentor" placeholder="Assigned mentor name" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s4-check-freq">Follow-Up Frequency</label>
+                                    <input type="text" id="s4-check-freq"
+                                        placeholder="e.g., Every two weeks / Weekly family council" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 4 -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">4</span>
+                                <h2>Expected Outcomes and Self-Reliance Evaluation</h2>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="s4-outcomes">How will you know you have made meaningful progress when this
+                                    plan concludes?</label>
+                                <textarea id="s4-outcomes" rows="3"
+                                    placeholder="Describe measurable indicators of stability and progress..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="3">
+                                ← Previous: Step 3
+                            </button>
+                            <span class="step-saved-note">Action plan saved</span>
+                            <button type="button" class="btn-nav-next" data-next="5">
+                                Next: Step 5 (Work / Service) →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 5 -->
+                <section class="step-view" id="view-step-5" data-step="5">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">ACTIVE FORM</span>
+                                <span class="view-meta-tag">Reciprocity &amp; Service</span>
+                            </div>
+                            <h1>Step 5: What Work or Service Will I Do in Return for Any Assistance I Receive?</h1>
+                            <p class="view-description">
+                                Service builds dignity and strengthens community bonds. Prepare ideas beforehand and
+                                record the agreed assignment after consulting with your leader.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">MEMBER</span>
+                                    <strong class="sync-member-name">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">DATE</span>
+                                    <strong class="sync-date">Not set</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong class="sync-unit">Not specified</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phase A -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">A</span>
+                                <h2>Pre-Interview Preparation: Ideas to Share with Your Leader</h2>
+                                <span class="block-pill">Member Preparation</span>
+                            </div>
+
+                            <div class="service-list">
+                                <label class="service-option">
+                                    <input type="checkbox" class="srv-check" value="Meetinghouse & grounds maintenance"
+                                        data-hours="4" />
+                                    <div>
+                                        <strong>Minor maintenance and meetinghouse care</strong>
+                                        <small>Basic repairs, cleaning, yard care, or facility support</small>
+                                    </div>
+                                    <span class="hrs-badge">~4 hrs / wk</span>
+                                </label>
+
+                                <label class="service-option">
+                                    <input type="checkbox" class="srv-check" value="Community or storehouse logistics"
+                                        data-hours="8" />
+                                    <div>
+                                        <strong>Operational support in community or welfare projects</strong>
+                                        <small>Sorting, inventory, packing, or distribution assistance</small>
+                                    </div>
+                                    <span class="hrs-badge">~8 hrs / mo</span>
+                                </label>
+
+                                <label class="service-option">
+                                    <input type="checkbox" class="srv-check" value="Neighbor & family support"
+                                        data-hours="2" />
+                                    <div>
+                                        <strong>Service to older adults or families with specific needs</strong>
+                                        <small>Errands, transport, tutoring, or practical household help</small>
+                                    </div>
+                                    <span class="hrs-badge">~2 hrs / wk</span>
+                                </label>
+                            </div>
+
+                            <div class="input-group mt-16">
+                                <label for="s5-pre-notes">Personal notes and proposals to share</label>
+                                <textarea id="s5-pre-notes" rows="3"
+                                    placeholder="Note specific skills, schedule windows, or ideas to discuss..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Phase B -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num accent-num">B</span>
+                                <h2>Post-Interview: Agreed Work or Service Assignment</h2>
+                                <span class="block-pill">Agreed Assignment</span>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="s5-agreed-desc">Detailed description of agreed service or work</label>
+                                <textarea id="s5-agreed-desc" rows="3"
+                                    placeholder="Record the agreed service activity, location, and expectations..."></textarea>
+                            </div>
+
+                            <div class="grid-3 mt-16">
+                                <div class="input-group">
+                                    <label for="s5-hours">Committed Hours per Month</label>
+                                    <input type="number" step="0.5" min="0" id="s5-hours" value="0" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s5-start">Start Date</label>
+                                    <input type="date" id="s5-start" />
+                                </div>
+                                <div class="input-group">
+                                    <label for="s5-coordinator">Service Coordinator / Leader</label>
+                                    <input type="text" id="s5-coordinator" placeholder="Coordinator or leader name" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="4">
+                                ← Previous: Step 4
+                            </button>
+                            <span class="step-saved-note">Service commitment noted</span>
+                            <button type="button" class="btn-nav-next" data-next="6">
+                                Next: Step 6 (Commitment &amp; Signatures) →
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- STEP 6 -->
+                <section class="step-view" id="view-step-6" data-step="6">
+                    <div class="workspace-card">
+                        <div class="view-header">
+                            <div class="view-header-top">
+                                <span class="badge-active">FINAL FORMALIZATION STAGE</span>
+                                <span class="view-meta-tag">Confidential Welfare Record</span>
+                            </div>
+                            <h1>Step 6: Commitment and Signatures</h1>
+                            <p class="view-description">
+                                Review your executive summary, confirm your commitment statement, and complete signature
+                                details.
+                            </p>
+
+                            <div class="context-strip">
+                                <div class="context-cell">
+                                    <span class="context-label">MEMBER</span>
+                                    <strong class="sync-member-name">Not entered</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">DATE</span>
+                                    <strong class="sync-date">Not set</strong>
+                                </div>
+                                <div class="context-cell">
+                                    <span class="context-label">WARD / BRANCH</span>
+                                    <strong class="sync-unit">Not specified</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 1: Executive Summary -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">1</span>
+                                <h2>Executive Summary of the Self-Reliance Plan</h2>
+                            </div>
+
+                            <div class="exec-grid">
+                                <div class="exec-card">
+                                    <div class="exec-card-head">
+                                        <span>FINANCIAL DIAGNOSIS</span>
+                                        <span class="exec-tag" id="exec-budget-tag">Balanced</span>
+                                    </div>
+                                    <p id="exec-income-line">Monthly income: $0.00 USD</p>
+                                    <p id="exec-expense-line">Monthly expenses: $0.00 USD</p>
+                                    <strong id="exec-net-line">Net balance: $0.00 / mo</strong>
+                                </div>
+
+                                <div class="exec-card">
+                                    <div class="exec-card-head">
+                                        <span>INCOME &amp; WORK GOAL</span>
+                                        <span class="exec-tag">Step 4</span>
+                                    </div>
+                                    <strong id="exec-goal-title">Goal not yet specified</strong>
+                                    <p id="exec-goal-detail">Add your primary work or income objective in Step 4.</p>
+                                </div>
+
+                                <div class="exec-card">
+                                    <div class="exec-card-head">
+                                        <span>SERVICE COMMITMENT</span>
+                                        <span class="exec-tag">Step 5</span>
+                                    </div>
+                                    <strong id="exec-service-hours">0 hours / month</strong>
+                                    <p id="exec-service-desc">Service assignment details will appear here.</p>
+                                </div>
+
+                                <div class="exec-card">
+                                    <div class="exec-card-head">
+                                        <span>FOLLOW-UP &amp; REVIEW</span>
+                                        <span class="exec-tag">Check-In</span>
+                                    </div>
+                                    <strong id="exec-mentor-name">Mentor not assigned</strong>
+                                    <p id="exec-followup-freq">Schedule regular review with family and advisor.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 2: Commitment Statement -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">2</span>
+                                <h2>Member and Family Commitment Statement</h2>
+                            </div>
+
+                            <div class="statement-panel">
+                                <p>
+                                    I, <strong class="sync-member-name">[Member Name]</strong>, commit to working
+                                    diligently on the goals,
+                                    budget adjustments, and service commitments outlined in this plan, and to reviewing
+                                    progress regularly
+                                    with my family and assigned advisors.
+                                </p>
+                                <label class="check-line">
+                                    <input type="checkbox" id="s6-confirm-accurate" />
+                                    <span>I have reviewed the previous steps and confirm that the information recorded
+                                        is accurate and complete.</span>
+                                </label>
+                                <label class="check-line">
+                                    <input type="checkbox" id="s6-confirm-followup" />
+                                    <span>I agree to regular follow-up and progress reviews with my family and assigned
+                                        leader or mentor.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Block 3: Signatures -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">3</span>
+                                <h2>Signature Details and Formalization</h2>
+                            </div>
+
+                            <div class="grid-3">
+                                <div class="sig-card">
+                                    <h4>Member Signature</h4>
+                                    <div class="input-group">
+                                        <label for="s6-sig-member">Printed Name / Signature</label>
+                                        <input type="text" id="s6-sig-member" placeholder="Member full name" />
+                                    </div>
+                                    <div class="input-group mt-10">
+                                        <label for="s6-date-member">Date</label>
+                                        <input type="date" id="s6-date-member" />
+                                    </div>
+                                </div>
+
+                                <div class="sig-card">
+                                    <h4>Spouse / Household Partner</h4>
+                                    <div class="input-group">
+                                        <label for="s6-sig-spouse">Printed Name / Signature</label>
+                                        <input type="text" id="s6-sig-spouse"
+                                            placeholder="Spouse name (if applicable)" />
+                                    </div>
+                                    <div class="input-group mt-10">
+                                        <label for="s6-date-spouse">Date</label>
+                                        <input type="date" id="s6-date-spouse" />
+                                    </div>
+                                </div>
+
+                                <div class="sig-card">
+                                    <h4>Bishop / Branch President / Advisor</h4>
+                                    <div class="input-group">
+                                        <label for="s6-sig-leader">Leader or Advisor Name</label>
+                                        <input type="text" id="s6-sig-leader" placeholder="Leader or advisor name" />
+                                    </div>
+                                    <div class="input-group mt-10">
+                                        <label for="s6-date-leader">Approval / Review Date</label>
+                                        <input type="date" id="s6-date-leader" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Block 4: Next Steps -->
+                        <div class="form-block">
+                            <div class="block-title-row">
+                                <span class="block-num">4</span>
+                                <h2>Next Steps and Immediate Roadmap</h2>
+                            </div>
+
+                            <div class="grid-3">
+                                <div class="roadmap-card">
+                                    <span class="road-step">1</span>
+                                    <h4>Family Copy</h4>
+                                    <p>Save or print a copy to keep in your home binder and review during family
+                                        council.</p>
+                                </div>
+                                <div class="roadmap-card">
+                                    <span class="road-step">2</span>
+                                    <h4>Mentor Check-In</h4>
+                                    <p>Schedule your first follow-up meeting to review budget tracking and action items.
+                                    </p>
+                                </div>
+                                <div class="roadmap-card">
+                                    <span class="road-step">3</span>
+                                    <h4>Service Coordination</h4>
+                                    <p>Confirm start date and expectations for your agreed work or community service.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-footer-bar">
+                            <button type="button" class="btn-nav-prev" data-prev="5">
+                                ← Previous: Step 5
+                            </button>
+                            <span class="step-saved-note" id="s6-final-status">Ready to review and finalize</span>
+                            <button type="button" id="btn-finalize-plan" class="btn-nav-next btn-finalize">
+                                Finalize Plan ✓
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer no-print">
+            <div class="footer-inner">
+                <p>© SelfReliancePath. Confidential personal and family self-reliance planning workspace.</p>
+                <div class="footer-links">
+                    <a href="#top-bar" id="link-top">Back to Top</a>
+                    <span>·</span>
+                    <button type="button" id="btn-footer-print" class="footer-link-btn">Print Summary</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
