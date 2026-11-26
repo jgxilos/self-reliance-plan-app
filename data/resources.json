@@ -1,0 +1,58 @@
+{
+  "locale": "en-US",
+  "currency": "USD",
+  "reflectionTips": [
+    {
+      "id": "tip-planning",
+      "quote": "“Plan carefully and work diligently toward steady improvement, building strength step by step.”",
+      "heading": "Principle of self-reliance",
+      "body": "Honest assessment of current needs, income, and resources lays a clear foundation for lasting stability."
+    },
+    {
+      "id": "tip-budgeting",
+      "quote": "“Small, consistent habits practiced every week produce lasting results over time.”",
+      "heading": "Practical budgeting tip",
+      "body": "Track every dollar spent for two weeks to spot small leaks and adjust your monthly plan with confidence."
+    },
+    {
+      "id": "tip-skills",
+      "quote": "“Faith paired with focused effort helps turn practical skills into reliable opportunities.”",
+      "heading": "Skills and initiative",
+      "body": "List everyday talents, tools, and community connections—unused strengths often help bridge short-term gaps."
+    },
+    {
+      "id": "tip-service",
+      "quote": "“Service given with dignity strengthens both the giver and the broader community.”",
+      "heading": "Reciprocity and service",
+      "body": "Align your service commitment with your realistic schedule and abilities so it remains sustainable."
+    },
+    {
+      "id": "tip-reserves",
+      "quote": "“Prepare in times of calm so unexpected expenses do not derail household progress.”",
+      "heading": "Emergency buffer",
+      "body": "Even a modest monthly set-aside in USD helps protect essential food, housing, and health priorities."
+    }
+  ],
+  "suggestedResources": [
+    {
+      "step": 1,
+      "title": "Immediate Priority Checklist",
+      "detail": "Separate urgent 0–15 day household essentials from 1–3+ month employment or training goals."
+    },
+    {
+      "step": 2,
+      "title": "Zero-Based Monthly Review",
+      "detail": "Compare fixed and variable monthly expenses in USD against net take-home income before committing to new debt."
+    },
+    {
+      "step": 3,
+      "title": "Skill & Community Inventory",
+      "detail": "Pair practical trades, digital or caregiving skills, and local support networks to offset short-term gaps."
+    },
+    {
+      "step": 4,
+      "title": "Weekly Action Cadence",
+      "detail": "Break each self-reliance goal into concrete weekly tasks with clear owners, target dates, and follow-up check-ins."
+    }
+  ]
+}
