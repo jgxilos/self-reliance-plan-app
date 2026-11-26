@@ -1,5 +1,13 @@
 // SelfReliancePath: Self-Reliance Plan
-// Main interactive controller (US English, in-memory state)
+// Main interactive controller (US English, connected to BudgetCalculator.mjs)
+
+import {
+  calculateMonthlyBudget,
+  calculateNeedsSummary,
+  calculateResourcesSummary,
+  formatCurrency,
+  parseAmount
+} from "./BudgetCalculator.mjs";
 
 const REFLECTION_TIPS = [
   {
@@ -33,23 +41,8 @@ const state = {
 };
 
 // ============================================================================
-// Formatting & DOM Helpers
+// DOM Helpers
 // ============================================================================
-function formatUSD(amount) {
-  const num = Number.isFinite(amount) ? amount : 0;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(num);
-}
-
-function parseNum(value) {
-  const parsed = parseFloat(value);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
-}
-
 function $(selector, root = document) {
   return root.querySelector(selector);
 }
@@ -149,36 +142,31 @@ function syncContextHeaders() {
 }
 
 // ============================================================================
-// Step 1 Calculations
+// Step 1, Step 2 & Step 3 Calculations (via BudgetCalculator.mjs)
 // ============================================================================
 function recalculateStep1() {
-  const food = parseNum($("#s1-imm-food")?.value);
-  const housing = parseNum($("#s1-imm-housing")?.value);
-  const health = parseNum($("#s1-imm-health")?.value);
-  const totalGap = food + housing + health;
+  const summary = calculateNeedsSummary({
+    food: $("#s1-imm-food")?.value,
+    housing: $("#s1-imm-housing")?.value,
+    health: $("#s1-imm-health")?.value,
+    immediateSelectedCount: $$(".imm-chip:checked").length,
+    longTermSelectedCount: $$(".lt-chip:checked").length
+  });
 
-  const immSelected = $$(".imm-chip:checked").length;
-  const ltSelected = $$(".lt-chip:checked").length;
-
-  if ($("#s1-total-gap")) $("#s1-total-gap").textContent = formatUSD(totalGap);
-  if ($("#s1-imm-count")) $("#s1-imm-count").textContent = `${immSelected} selected`;
-  if ($("#s1-lt-count")) $("#s1-lt-count").textContent = `${ltSelected} selected`;
+  if ($("#s1-total-gap")) $("#s1-total-gap").textContent = summary.formattedGap;
+  if ($("#s1-imm-count")) $("#s1-imm-count").textContent = `${summary.immediateCount} selected`;
+  if ($("#s1-lt-count")) $("#s1-lt-count").textContent = `${summary.longTermCount} selected`;
 }
 
-// ============================================================================
-// Step 2 Budget Calculations
-// ============================================================================
 function recalculateBudget() {
-  const income = $$(".inc-input").reduce((sum, input) => sum + parseNum(input.value), 0);
+  const budget = calculateMonthlyBudget({
+    incomes: $$(".inc-input").map((input) => input.value),
+    baseExpenses: $$(".exp-input").map((input) => input.value),
+    customExpenses: $$(".custom-exp-amount").map((input) => input.value)
+  });
 
-  const baseExpenses = $$(".exp-input").reduce((sum, input) => sum + parseNum(input.value), 0);
-  const customExpenses = $$(".custom-exp-amount").reduce((sum, input) => sum + parseNum(input.value), 0);
-  const expenses = baseExpenses + customExpenses;
-
-  const net = income - expenses;
-
-  if ($("#s2-total-income")) $("#s2-total-income").textContent = `${formatUSD(income)} USD`;
-  if ($("#s2-total-expenses")) $("#s2-total-expenses").textContent = `${formatUSD(expenses)} USD`;
+  if ($("#s2-total-income")) $("#s2-total-income").textContent = budget.formattedIncome;
+  if ($("#s2-total-expenses")) $("#s2-total-expenses").textContent = budget.formattedExpenses;
 
   const netEl = $("#s2-net-amount");
   const pillEl = $("#s2-balance-pill");
@@ -186,86 +174,66 @@ function recalculateBudget() {
   const cardEl = $("#s2-net-card");
   const fileBalanceEl = $("#file-balance-val");
 
-  if (netEl) netEl.textContent = formatUSD(net);
-  if (fileBalanceEl) fileBalanceEl.textContent = `${formatUSD(net)} / mo`;
+  if (netEl) netEl.textContent = budget.formattedNet;
+  if (fileBalanceEl) fileBalanceEl.textContent = budget.formattedNetMonthly;
 
   if (cardEl) {
     cardEl.classList.remove("surplus", "deficit");
-    if (net > 0) {
-      cardEl.classList.add("surplus");
-      if (pillEl) pillEl.textContent = "Positive Surplus";
-      if (noteEl) noteEl.textContent = "Monthly income exceeds estimated expenses";
-    } else if (net < 0) {
-      cardEl.classList.add("deficit");
-      if (pillEl) pillEl.textContent = "Monthly Deficit";
-      if (noteEl) noteEl.textContent = "Expenses exceed income—review adjustments or resources";
-    } else {
-      if (pillEl) pillEl.textContent = "Balanced";
-      if (noteEl) noteEl.textContent = "Income matches estimated monthly expenses";
-    }
+    if (budget.status === "surplus") cardEl.classList.add("surplus");
+    if (budget.status === "deficit") cardEl.classList.add("deficit");
   }
+
+  if (pillEl) pillEl.textContent = budget.badgeLabel;
+  if (noteEl) noteEl.textContent = budget.description;
 
   updateExecutiveSummary();
 }
 
-// ============================================================================
-// Step 3 Resource Calculations
-// ============================================================================
 function recalculateResources() {
-  let activeCount = 0;
-  let reservesTotal = 0;
+  const materialRows = $$("#s3-material-rows .resource-item");
+  const activeMaterialCount = materialRows.filter((row) => $(".res-active", row)?.checked).length;
+  const materialValues = materialRows.map((row) => $(".res-val", row)?.value);
+  const skillPotentials = $$(".skill-pot").map((input) => input.value);
+  const networkSelectedCount = $$(".net-check:checked").length;
 
-  $$("#s3-material-rows .resource-item").forEach((row) => {
-    const checked = $(".res-active", row)?.checked;
-    const val = parseNum($(".res-val", row)?.value);
-    if (checked || val > 0) {
-      if (checked) activeCount += 1;
-      reservesTotal += val;
-    }
+  const summary = calculateResourcesSummary({
+    activeMaterialCount,
+    materialValues,
+    skillPotentials,
+    networkSelectedCount
   });
 
-  const skillsPotential = $$(".skill-pot").reduce((sum, input) => sum + parseNum(input.value), 0);
-  const networkCount = $$(".net-check:checked").length;
-
-  if ($("#s3-summary-text")) {
-    $("#s3-summary-text").textContent =
-      `${activeCount} active reserves · ${formatUSD(reservesTotal)} material value · ${networkCount} support options`;
-  }
-  if ($("#s3-potential-text")) {
-    $("#s3-potential-text").textContent =
-      `Estimated monthly earning potential: ${formatUSD(skillsPotential)}`;
-  }
+  if ($("#s3-summary-text")) $("#s3-summary-text").textContent = summary.summaryLine;
+  if ($("#s3-potential-text")) $("#s3-potential-text").textContent = summary.potentialLine;
 }
 
 // ============================================================================
 // Step 6 Executive Summary
 // ============================================================================
 function updateExecutiveSummary() {
-  const income = $$(".inc-input").reduce((sum, input) => sum + parseNum(input.value), 0);
-  const baseExp = $$(".exp-input").reduce((sum, input) => sum + parseNum(input.value), 0);
-  const customExp = $$(".custom-exp-amount").reduce((sum, input) => sum + parseNum(input.value), 0);
-  const expenses = baseExp + customExp;
-  const net = income - expenses;
+  const budget = calculateMonthlyBudget({
+    incomes: $$(".inc-input").map((input) => input.value),
+    baseExpenses: $$(".exp-input").map((input) => input.value),
+    customExpenses: $$(".custom-exp-amount").map((input) => input.value)
+  });
 
   const goalTitle = ($("#s4-p1-goal")?.value || "").trim() || "Goal not yet specified";
-  const goalTarget = parseNum($("#s4-p1-target")?.value);
+  const goalTarget = parseAmount($("#s4-p1-target")?.value);
   const mentor = ($("#s4-mentor")?.value || "").trim() || "Mentor not assigned";
   const freq = ($("#s4-check-freq")?.value || "").trim() || "Schedule regular review with family and advisor.";
 
-  const hours = parseNum($("#s5-hours")?.value);
+  const hours = parseAmount($("#s5-hours")?.value);
   const serviceDesc = ($("#s5-agreed-desc")?.value || "").trim() || "Service assignment details will appear here.";
 
-  if ($("#exec-income-line")) $("#exec-income-line").textContent = `Monthly income: ${formatUSD(income)} USD`;
-  if ($("#exec-expense-line")) $("#exec-expense-line").textContent = `Monthly expenses: ${formatUSD(expenses)} USD`;
-  if ($("#exec-net-line")) $("#exec-net-line").textContent = `Net balance: ${formatUSD(net)} / mo`;
-  if ($("#exec-budget-tag")) {
-    $("#exec-budget-tag").textContent = net > 0 ? "Surplus" : net < 0 ? "Deficit" : "Balanced";
-  }
+  if ($("#exec-income-line")) $("#exec-income-line").textContent = `Monthly income: ${budget.formattedIncome}`;
+  if ($("#exec-expense-line")) $("#exec-expense-line").textContent = `Monthly expenses: ${budget.formattedExpenses}`;
+  if ($("#exec-net-line")) $("#exec-net-line").textContent = `Net balance: ${budget.formattedNetMonthly}`;
+  if ($("#exec-budget-tag")) $("#exec-budget-tag").textContent = budget.badgeLabel;
 
   if ($("#exec-goal-title")) $("#exec-goal-title").textContent = goalTitle;
   if ($("#exec-goal-detail")) {
     $("#exec-goal-detail").textContent =
-      goalTarget > 0 ? `Monthly target: ${formatUSD(goalTarget)}` : "Define your target in Step 4.";
+      goalTarget > 0 ? `Monthly target: ${formatCurrency(goalTarget)}` : "Define your target in Step 4.";
   }
 
   if ($("#exec-service-hours")) $("#exec-service-hours").textContent = `${hours} hours / month`;
@@ -451,7 +419,6 @@ function initNavigationAndActions() {
     alert(`Prepare your budget and action plan notes to share with ${name}.`);
   });
 
-  // Live listeners for context, step 1, step 2, step 3, and step 6
   ["#s0-fullname", "#s0-start-date", "#s0-ward", "#s0-stake", "#s0-specialist"].forEach((id) => {
     $(id)?.addEventListener("input", syncContextHeaders);
   });
