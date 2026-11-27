@@ -1,7 +1,7 @@
 // SelfReliancePath: Self-Reliance Plan
-// Pure financial & planning calculation module (US English / USD)
+// Financial & Resource Calculation Module (US English, USD)
 
-const USD_FORMATTER = new Intl.NumberFormat("en-US", {
+const CURRENCY_FORMATTER = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2,
@@ -9,145 +9,117 @@ const USD_FORMATTER = new Intl.NumberFormat("en-US", {
 });
 
 /**
- * Formats a numeric value in US dollars ($1,234.56).
- * @param {number|string} amount
- * @param {{ includeCode?: boolean }} [options]
+ * Formats a numeric value as US dollars ($1,234.56).
+ * @param {number} amount
  * @returns {string}
  */
-export function formatCurrency(amount, { includeCode = false } = {}) {
+export function formatCurrency(amount) {
   const numeric = Number(amount);
-  const safeValue = Number.isFinite(numeric) ? numeric : 0;
-  const formatted = USD_FORMATTER.format(safeValue);
-  return includeCode ? `${formatted} USD` : formatted;
+  const safe = Number.isFinite(numeric) ? numeric : 0;
+  return CURRENCY_FORMATTER.format(safe);
 }
 
 /**
- * Safely parses a non-negative number from user input.
- * @param {unknown} value
- * @returns {number}
- */
-export function parseAmount(value) {
-  if (typeof value === "number") {
-    return Number.isFinite(value) && value >= 0 ? value : 0;
-  }
-  if (typeof value === "string") {
-    const cleaned = value.replace(/[$,\s]/g, "").trim();
-    if (!cleaned) return 0;
-    const parsed = Number.parseFloat(cleaned);
-    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
-  }
-  return 0;
-}
-
-/**
- * Sums an array of numeric or string values safely.
+ * Sums an array of numeric inputs safely.
  * @param {Array<number|string>} values
  * @returns {number}
  */
 export function sumAmounts(values = []) {
   if (!Array.isArray(values)) return 0;
-  return values.reduce((total, item) => total + parseAmount(item), 0);
+  return values.reduce((acc, val) => {
+    const num = Number.parseFloat(val);
+    return acc + (Number.isFinite(num) && num > 0 ? num : 0);
+  }, 0);
 }
 
 /**
- * Calculates Step 1 immediate needs summary.
+ * Calculates Step 1 needs diagnostic totals and selection counts.
  * @param {{
- *   food?: number|string,
- *   housing?: number|string,
- *   health?: number|string,
- *   immediateSelectedCount?: number,
- *   longTermSelectedCount?: number
- * }} params
+ *   gapAmounts?: Array<number|string>,
+ *   immediateCount?: number,
+ *   longTermCount?: number
+ * }} [params]
  */
 export function calculateNeedsSummary(params = {}) {
-  const food = parseAmount(params.food);
-  const housing = parseAmount(params.housing);
-  const health = parseAmount(params.health);
-  const immediateGap = sumAmounts([food, housing, health]);
-
-  const immediateCount = Math.max(0, Math.floor(parseAmount(params.immediateSelectedCount)));
-  const longTermCount = Math.max(0, Math.floor(parseAmount(params.longTermSelectedCount)));
+  const totalGap = sumAmounts(params.gapAmounts || []);
+  const immediateCount = Math.max(0, Number.parseInt(params.immediateCount ?? 0, 10) || 0);
+  const longTermCount = Math.max(0, Number.parseInt(params.longTermCount ?? 0, 10) || 0);
 
   return {
-    food,
-    housing,
-    health,
-    immediateGap,
+    totalGap,
+    formattedGap: formatCurrency(totalGap),
     immediateCount,
-    longTermCount,
-    totalSelectedAreas: immediateCount + longTermCount,
-    formattedGap: formatCurrency(immediateGap)
+    longTermCount
   };
 }
 
 /**
- * Calculates monthly income, monthly expenses (base + custom), and net balance.
+ * Calculates Step 2 monthly income, expenses, net balance, and status badge.
  * @param {{
- *   incomes?: Array<number|string>,
- *   baseExpenses?: Array<number|string>,
- *   customExpenses?: Array<number|string>
- * }} params
+ *   incomeAmounts?: Array<number|string>,
+ *   expenseAmounts?: Array<number|string>
+ * }} [params]
  */
-export function calculateMonthlyBudget(params = {}) {
-  const totalIncome = sumAmounts(params.incomes);
-  const baseExpensesTotal = sumAmounts(params.baseExpenses);
-  const customExpensesTotal = sumAmounts(params.customExpenses);
-  const totalExpenses = sumAmounts([baseExpensesTotal, customExpensesTotal]);
+export function calculateBudgetSummary(params = {}) {
+  const totalIncome = sumAmounts(params.incomeAmounts || []);
+  const totalExpenses = sumAmounts(params.expenseAmounts || []);
   const netBalance = totalIncome - totalExpenses;
 
   let status = "balanced";
   let badgeLabel = "Balanced";
   let description = "Monthly income matches estimated expenses.";
 
-  if (netBalance > 0) {
+  if (netBalance > 0.005) {
     status = "surplus";
     badgeLabel = "Positive Surplus";
     description = "Monthly income exceeds estimated expenses.";
-  } else if (netBalance < 0) {
+  } else if (netBalance < -0.005) {
     status = "deficit";
     badgeLabel = "Monthly Deficit";
-    description = "Expenses exceed income—review adjustments or resources.";
+    description = "Estimated expenses exceed monthly income; review adjustments in Step 3.";
   }
+
+  const absFormatted = formatCurrency(Math.abs(netBalance));
+  const signedNet =
+    netBalance < -0.005 ? `-${absFormatted}` : netBalance > 0.005 ? `+${absFormatted}` : "$0.00";
 
   return {
     totalIncome,
-    baseExpensesTotal,
-    customExpensesTotal,
     totalExpenses,
     netBalance,
     status,
     badgeLabel,
     description,
-    formattedIncome: formatCurrency(totalIncome, { includeCode: true }),
-    formattedExpenses: formatCurrency(totalExpenses, { includeCode: true }),
-    formattedNet: formatCurrency(netBalance),
-    formattedNetMonthly: `${formatCurrency(netBalance)} / mo`
+    formattedIncome: `${formatCurrency(totalIncome)} USD`,
+    formattedExpenses: `${formatCurrency(totalExpenses)} USD`,
+    formattedNet: signedNet,
+    formattedNetMonthly: `${signedNet} / mo`
   };
 }
 
 /**
- * Calculates Step 3 reserves, active items, and monthly earning potential.
+ * Calculates Step 3 material reserves, support selections, and monthly skill potential.
  * @param {{
- *   activeMaterialCount?: number,
- *   materialValues?: Array<number|string>,
+ *   materialItems?: Array<{ active?: boolean, value?: number|string }>,
  *   skillPotentials?: Array<number|string>,
- *   networkSelectedCount?: number
- * }} params
+ *   supportCount?: number
+ * }} [params]
  */
 export function calculateResourcesSummary(params = {}) {
-  const activeMaterialCount = Math.max(0, Math.floor(parseAmount(params.activeMaterialCount)));
-  const reservesTotal = sumAmounts(params.materialValues);
-  const monthlyEarningPotential = sumAmounts(params.skillPotentials);
-  const networkCount = Math.max(0, Math.floor(parseAmount(params.networkSelectedCount)));
+  const materials = Array.isArray(params.materialItems) ? params.materialItems : [];
+  const activeMaterials = materials.filter((item) => Boolean(item?.active));
+  const activeCount = activeMaterials.length;
+  const materialTotal = sumAmounts(activeMaterials.map((item) => item.value ?? 0));
+
+  const monthlyPotential = sumAmounts(params.skillPotentials || []);
+  const supportCount = Math.max(0, Number.parseInt(params.supportCount ?? 0, 10) || 0);
 
   return {
-    activeMaterialCount,
-    reservesTotal,
-    monthlyEarningPotential,
-    networkCount,
-    formattedReserves: formatCurrency(reservesTotal),
-    formattedPotential: formatCurrency(monthlyEarningPotential),
-    summaryLine: `${activeMaterialCount} active reserves · ${formatCurrency(reservesTotal)} material value · ${networkCount} support options`,
-    potentialLine: `Estimated monthly earning potential: ${formatCurrency(monthlyEarningPotential)}`
+    activeCount,
+    materialTotal,
+    monthlyPotential,
+    supportCount,
+    summaryLine: `${activeCount} active reserves · ${formatCurrency(materialTotal)} material value · ${supportCount} support options`,
+    potentialLine: `Estimated monthly earning potential: ${formatCurrency(monthlyPotential)}`
   };
 }
