@@ -1,457 +1,452 @@
 // SelfReliancePath: Self-Reliance Plan
-// Main interactive controller (US English, connected to BudgetCalculator.mjs)
+// Main Application Orchestrator (ES6 Module, US English)
 
 import {
-  calculateMonthlyBudget,
   calculateNeedsSummary,
-  calculateResourcesSummary,
-  formatCurrency,
-  parseAmount
+  calculateBudgetSummary,
+  calculateResourcesSummary
 } from "./BudgetCalculator.mjs";
+import { StorageService } from "./StorageService.mjs";
+import {
+  renderContextHeaders,
+  renderNeedsSummary,
+  renderBudgetSummary,
+  renderResourcesSummary,
+  renderExecutiveSummary,
+  createHouseholdRowElement,
+  createCustomExpenseRowElement,
+  createSkillRowElement,
+  createActionRowElement,
+  populateOfficialPrintForm
+} from "./RenderUtils.mjs";
+import { WizardController } from "./WizardController.mjs";
+import { ExternalServices } from "./ExternalServices.mjs";
 
-const REFLECTION_TIPS = [
-  {
-    quote: "“Plan carefully and work diligently toward steady improvement, building strength step by step.”",
-    heading: "Principle of self-reliance",
-    body: "Honest assessment of current needs, income, and resources lays a clear foundation for lasting stability."
-  },
-  {
-    quote: "“Small, consistent habits practiced every week produce lasting results over time.”",
-    heading: "Practical budgeting tip",
-    body: "Track every dollar spent for two weeks to spot small leaks and adjust your monthly plan with confidence."
-  },
-  {
-    quote: "“Faith paired with focused effort helps turn practical skills into reliable opportunities.”",
-    heading: "Skills and initiative",
-    body: "List everyday talents, tools, and community connections—unused strengths often help bridge short-term gaps."
-  },
-  {
-    quote: "“Service given with dignity strengthens both the giver and the broader community.”",
-    heading: "Reciprocity and service",
-    body: "Align your service commitment with your realistic schedule and abilities so it remains sustainable."
+const AUTOSAVE_DELAY_MS = 350;
+
+class SelfRelianceApp {
+  constructor() {
+    this.storage = new StorageService();
+    this.externalServices = new ExternalServices();
+    this.wizard = new WizardController({
+      totalSteps: 7,
+      initialStep: 0,
+      onStepChange: (stepIndex) => {
+        this.syncAllViews();
+        this.scheduleAutosave({ step: stepIndex });
+      }
+    });
+    this.saveTimer = null;
   }
-];
 
-const TOTAL_STEPS = 7;
+  async init() {
+    this.bindNavigationEvents();
+    this.bindDynamicRowEvents();
+    this.bindInputEvents();
+    this.bindActionButtons();
+    this.bindPrintEvents();
 
-const state = {
-  currentStep: 0,
-  tipIndex: 0,
-  finalized: false
-};
-
-// ============================================================================
-// DOM Helpers
-// ============================================================================
-function $(selector, root = document) {
-  return root.querySelector(selector);
-}
-
-function $$(selector, root = document) {
-  return Array.from(root.querySelectorAll(selector));
-}
-
-// ============================================================================
-// Step Navigation & Progress
-// ============================================================================
-function setActiveStep(stepIndex) {
-  const clamped = Math.max(0, Math.min(TOTAL_STEPS - 1, Number(stepIndex) || 0));
-  state.currentStep = clamped;
-
-  $$(".step-view").forEach((view) => {
-    const viewStep = Number(view.dataset.step);
-    view.classList.toggle("active", viewStep === clamped);
-  });
-
-  $$(".stepper-item").forEach((item) => {
-    const itemStep = Number(item.dataset.step);
-    const stateEl = $(".stepper-state", item);
-    item.classList.remove("active", "completed");
-
-    if (itemStep === clamped) {
-      item.classList.add("active");
-      if (stateEl) stateEl.textContent = itemStep === 6 ? "FINAL STEP" : "IN PROGRESS";
-    } else if (itemStep < clamped) {
-      item.classList.add("completed");
-      if (stateEl) stateEl.textContent = "COMPLETED";
-    } else if (stateEl) {
-      stateEl.textContent = itemStep === 6 ? "FINAL" : "PENDING";
+    const savedState = this.storage.loadPlan();
+    if (savedState) {
+      this.applySavedState(savedState);
+      const statusEl = document.querySelector("#autosave-indicator");
+      if (statusEl) {
+        statusEl.textContent = this.storage.formatSavedStatus(savedState.updatedAt);
+      }
     }
-  });
 
-  updateProgressSummary();
-  updateExecutiveSummary();
+    this.syncAllViews();
 
-  const workspaceTop = $(".main-workspace");
-  if (workspaceTop) {
-    workspaceTop.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-}
+    const initialStep = Number.isInteger(savedState?.currentStep) ? savedState.currentStep : 0;
+    this.wizard.goToStep(initialStep, { scrollToTop: false });
 
-function updateProgressSummary() {
-  const percent = Math.round(((state.currentStep + 1) / TOTAL_STEPS) * 100);
-  const completedCount = state.currentStep + 1;
-
-  const badge = $("#sidebar-progress-percent");
-  const countText = $("#sidebar-sections-count");
-  const fill = $("#sidebar-progress-fill");
-  const fileSections = $("#file-sections-val");
-
-  if (badge) badge.textContent = `${percent}%`;
-  if (countText) countText.textContent = `${completedCount} of ${TOTAL_STEPS} stages active`;
-  if (fill) fill.style.width = `${percent}%`;
-  if (fileSections) fileSections.textContent = `${state.currentStep} of 6 steps`;
-}
-
-// ============================================================================
-// Context Sync Across Steps
-// ============================================================================
-function syncContextHeaders() {
-  const memberName = ($("#s0-fullname")?.value || "").trim() || "Not entered";
-  const startDate = $("#s0-start-date")?.value || "Not set";
-  const ward = ($("#s0-ward")?.value || "").trim() || "Not specified";
-  const stake = ($("#s0-stake")?.value || "").trim() || "Not specified";
-  const specialist = ($("#s0-specialist")?.value || "").trim();
-
-  const hhRows = $$("#s0-household-tbody tr").length;
-  const totalHousehold = 1 + hhRows;
-  const householdLabel = `${totalHousehold} ${totalHousehold === 1 ? "person" : "people"}`;
-
-  if ($("#ctx-member-0")) $("#ctx-member-0").textContent = memberName;
-  if ($("#ctx-date-0")) $("#ctx-date-0").textContent = startDate;
-  if ($("#ctx-unit-0")) $("#ctx-unit-0").textContent = ward;
-  if ($("#ctx-stake-0")) $("#ctx-stake-0").textContent = stake;
-  if ($("#household-count-pill")) $("#household-count-pill").textContent = `Total: ${householdLabel}`;
-
-  $$(".sync-member-name").forEach((el) => {
-    el.textContent = memberName === "Not entered" ? "[Member Name]" : memberName;
-  });
-  $$(".sync-date").forEach((el) => {
-    el.textContent = startDate;
-  });
-  $$(".sync-unit").forEach((el) => {
-    el.textContent = ward;
-  });
-  $$(".sync-household").forEach((el) => {
-    el.textContent = householdLabel;
-  });
-
-  if ($("#specialist-name") && specialist) {
-    $("#specialist-name").textContent = specialist;
-  }
-}
-
-// ============================================================================
-// Step 1, Step 2 & Step 3 Calculations (via BudgetCalculator.mjs)
-// ============================================================================
-function recalculateStep1() {
-  const summary = calculateNeedsSummary({
-    food: $("#s1-imm-food")?.value,
-    housing: $("#s1-imm-housing")?.value,
-    health: $("#s1-imm-health")?.value,
-    immediateSelectedCount: $$(".imm-chip:checked").length,
-    longTermSelectedCount: $$(".lt-chip:checked").length
-  });
-
-  if ($("#s1-total-gap")) $("#s1-total-gap").textContent = summary.formattedGap;
-  if ($("#s1-imm-count")) $("#s1-imm-count").textContent = `${summary.immediateCount} selected`;
-  if ($("#s1-lt-count")) $("#s1-lt-count").textContent = `${summary.longTermCount} selected`;
-}
-
-function recalculateBudget() {
-  const budget = calculateMonthlyBudget({
-    incomes: $$(".inc-input").map((input) => input.value),
-    baseExpenses: $$(".exp-input").map((input) => input.value),
-    customExpenses: $$(".custom-exp-amount").map((input) => input.value)
-  });
-
-  if ($("#s2-total-income")) $("#s2-total-income").textContent = budget.formattedIncome;
-  if ($("#s2-total-expenses")) $("#s2-total-expenses").textContent = budget.formattedExpenses;
-
-  const netEl = $("#s2-net-amount");
-  const pillEl = $("#s2-balance-pill");
-  const noteEl = $("#s2-balance-note");
-  const cardEl = $("#s2-net-card");
-  const fileBalanceEl = $("#file-balance-val");
-
-  if (netEl) netEl.textContent = budget.formattedNet;
-  if (fileBalanceEl) fileBalanceEl.textContent = budget.formattedNetMonthly;
-
-  if (cardEl) {
-    cardEl.classList.remove("surplus", "deficit");
-    if (budget.status === "surplus") cardEl.classList.add("surplus");
-    if (budget.status === "deficit") cardEl.classList.add("deficit");
+    await this.loadExternalTips();
   }
 
-  if (pillEl) pillEl.textContent = budget.badgeLabel;
-  if (noteEl) noteEl.textContent = budget.description;
-
-  updateExecutiveSummary();
-}
-
-function recalculateResources() {
-  const materialRows = $$("#s3-material-rows .resource-item");
-  const activeMaterialCount = materialRows.filter((row) => $(".res-active", row)?.checked).length;
-  const materialValues = materialRows.map((row) => $(".res-val", row)?.value);
-  const skillPotentials = $$(".skill-pot").map((input) => input.value);
-  const networkSelectedCount = $$(".net-check:checked").length;
-
-  const summary = calculateResourcesSummary({
-    activeMaterialCount,
-    materialValues,
-    skillPotentials,
-    networkSelectedCount
-  });
-
-  if ($("#s3-summary-text")) $("#s3-summary-text").textContent = summary.summaryLine;
-  if ($("#s3-potential-text")) $("#s3-potential-text").textContent = summary.potentialLine;
-}
-
-// ============================================================================
-// Step 6 Executive Summary
-// ============================================================================
-function updateExecutiveSummary() {
-  const budget = calculateMonthlyBudget({
-    incomes: $$(".inc-input").map((input) => input.value),
-    baseExpenses: $$(".exp-input").map((input) => input.value),
-    customExpenses: $$(".custom-exp-amount").map((input) => input.value)
-  });
-
-  const goalTitle = ($("#s4-p1-goal")?.value || "").trim() || "Goal not yet specified";
-  const goalTarget = parseAmount($("#s4-p1-target")?.value);
-  const mentor = ($("#s4-mentor")?.value || "").trim() || "Mentor not assigned";
-  const freq = ($("#s4-check-freq")?.value || "").trim() || "Schedule regular review with family and advisor.";
-
-  const hours = parseAmount($("#s5-hours")?.value);
-  const serviceDesc = ($("#s5-agreed-desc")?.value || "").trim() || "Service assignment details will appear here.";
-
-  if ($("#exec-income-line")) $("#exec-income-line").textContent = `Monthly income: ${budget.formattedIncome}`;
-  if ($("#exec-expense-line")) $("#exec-expense-line").textContent = `Monthly expenses: ${budget.formattedExpenses}`;
-  if ($("#exec-net-line")) $("#exec-net-line").textContent = `Net balance: ${budget.formattedNetMonthly}`;
-  if ($("#exec-budget-tag")) $("#exec-budget-tag").textContent = budget.badgeLabel;
-
-  if ($("#exec-goal-title")) $("#exec-goal-title").textContent = goalTitle;
-  if ($("#exec-goal-detail")) {
-    $("#exec-goal-detail").textContent =
-      goalTarget > 0 ? `Monthly target: ${formatCurrency(goalTarget)}` : "Define your target in Step 4.";
+  async loadExternalTips() {
+    const tips = await this.externalServices.getReflectionTips();
+    this.wizard.setTips(tips);
   }
 
-  if ($("#exec-service-hours")) $("#exec-service-hours").textContent = `${hours} hours / month`;
-  if ($("#exec-service-desc")) $("#exec-service-desc").textContent = serviceDesc;
+  bindNavigationEvents() {
+    document.querySelectorAll(".stepper-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const step = Number.parseInt(item.dataset.step, 10);
+        if (Number.isFinite(step)) {
+          this.wizard.goToStep(step);
+        }
+      });
+    });
 
-  if ($("#exec-mentor-name")) $("#exec-mentor-name").textContent = mentor;
-  if ($("#exec-followup-freq")) $("#exec-followup-freq").textContent = freq;
+    document.querySelectorAll(".btn-nav-next[data-next]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const nextStep = Number.parseInt(btn.dataset.next, 10);
+        if (Number.isFinite(nextStep)) {
+          this.wizard.goToStep(nextStep);
+        }
+      });
+    });
 
-  if ($("#file-service-val")) {
-    $("#file-service-val").textContent = hours > 0 ? `${hours} hrs / mo` : "Pending";
+    document.querySelectorAll(".btn-nav-prev[data-prev]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const prevStep = Number.parseInt(btn.dataset.prev, 10);
+        if (Number.isFinite(prevStep)) {
+          this.wizard.goToStep(prevStep);
+        }
+      });
+    });
+
+    const jumpStep2Btn = document.querySelector("#btn-jump-step2");
+    if (jumpStep2Btn) {
+      jumpStep2Btn.addEventListener("click", () => this.wizard.goToStep(2));
+    }
   }
-}
 
-// ============================================================================
-// Dynamic Rows & Event Wiring
-// ============================================================================
-function attachRowDeleteListeners(container) {
-  $$(".btn-row-del", container).forEach((btn) => {
-    btn.onclick = () => {
-      const tr = btn.closest("tr");
-      const tbody = tr?.parentElement;
-      if (tbody && tbody.children.length > 1) {
-        tr.remove();
-        syncContextHeaders();
-        recalculateResources();
-      } else if (tr) {
-        $$("input", tr).forEach((inp) => {
-          inp.value = inp.type === "number" ? "0" : "";
+  bindDynamicRowEvents() {
+    document.querySelector("#btn-add-household")?.addEventListener("click", () => {
+      const tbody = document.querySelector("#s0-household-tbody");
+      if (tbody) {
+        tbody.appendChild(createHouseholdRowElement());
+        this.syncAllViews();
+        this.scheduleAutosave();
+      }
+    });
+
+    document.querySelector("#btn-add-expense")?.addEventListener("click", () => {
+      const container = document.querySelector("#custom-expenses-list");
+      if (container) {
+        container.appendChild(createCustomExpenseRowElement());
+        this.syncAllViews();
+        this.scheduleAutosave();
+      }
+    });
+
+    document.querySelector("#btn-add-skill")?.addEventListener("click", () => {
+      const tbody = document.querySelector("#s3-skills-tbody");
+      if (tbody) {
+        tbody.appendChild(createSkillRowElement());
+        this.syncAllViews();
+        this.scheduleAutosave();
+      }
+    });
+
+    document.querySelector("#btn-add-action")?.addEventListener("click", () => {
+      const tbody = document.querySelector("#s4-actions-tbody");
+      if (tbody) {
+        tbody.appendChild(createActionRowElement());
+        this.syncAllViews();
+        this.scheduleAutosave();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const delBtn = event.target.closest(".btn-row-del");
+      if (!delBtn) return;
+
+      const row = delBtn.closest("tr, .custom-exp-row");
+      const parent = row?.parentElement;
+      if (!row || !parent) return;
+
+      if (parent.tagName === "TBODY" && parent.children.length <= 1) {
+        row.querySelectorAll("input, select").forEach((field) => {
+          if (field.type === "number") field.value = "0";
+          else if (field.tagName === "SELECT") field.selectedIndex = 0;
+          else field.value = "";
         });
-        recalculateResources();
+      } else {
+        row.remove();
+      }
+
+      this.syncAllViews();
+      this.scheduleAutosave();
+    });
+  }
+
+  bindInputEvents() {
+    const handleFormChange = () => {
+      this.syncAllViews();
+      this.scheduleAutosave();
+    };
+
+    document.addEventListener("input", handleFormChange);
+    document.addEventListener("change", handleFormChange);
+  }
+
+  bindActionButtons() {
+    document.querySelector("#btn-new-tip")?.addEventListener("click", () => {
+      this.wizard.cycleTip();
+    });
+
+    document.querySelector("#btn-finalize-plan")?.addEventListener("click", () => {
+      const result = this.wizard.finalizePlan();
+      this.scheduleAutosave({ finalized: result.valid });
+    });
+
+    document.querySelector("#link-top")?.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  bindPrintEvents() {
+    const triggerOfficialPrint = (event) => {
+      if (event) event.preventDefault();
+      this.syncAllViews();
+      populateOfficialPrintForm();
+      window.print();
+    };
+
+    window.addEventListener("beforeprint", () => {
+      this.syncAllViews();
+      populateOfficialPrintForm();
+    });
+
+    document.querySelector("#btn-print-view")?.addEventListener("click", triggerOfficialPrint);
+    document.querySelector("#btn-footer-print")?.addEventListener("click", triggerOfficialPrint);
+  }
+
+  collectFormState() {
+    const val = (sel) => document.querySelector(sel)?.value ?? "";
+    const checked = (sel) => Boolean(document.querySelector(sel)?.checked);
+
+    const fields = {};
+    document.querySelectorAll("input[id], select[id], textarea[id]").forEach((el) => {
+      if (el.closest("#official-print-document")) return;
+      fields[el.id] = el.type === "checkbox" ? el.checked : el.value;
+    });
+
+    const householdRows = Array.from(document.querySelectorAll("#s0-household-tbody tr")).map((tr) => ({
+      name: tr.querySelector(".hh-name")?.value ?? "",
+      rel: tr.querySelector(".hh-rel")?.value ?? "",
+      age: tr.querySelector(".hh-age")?.value ?? "",
+      occ: tr.querySelector(".hh-occ")?.value ?? ""
+    }));
+
+    const customExpenses = Array.from(document.querySelectorAll(".custom-exp-row")).map((row) => ({
+      label: row.querySelector(".custom-exp-label")?.value ?? "",
+      amount: row.querySelector(".custom-exp-amount")?.value ?? "0"
+    }));
+
+    const skills = Array.from(document.querySelectorAll("#s3-skills-tbody tr")).map((tr) => ({
+      name: tr.querySelector(".skill-name")?.value ?? "",
+      avail: tr.querySelector(".skill-avail")?.value ?? "",
+      pot: tr.querySelector(".skill-pot")?.value ?? "0"
+    }));
+
+    const actions = Array.from(document.querySelectorAll("#s4-actions-tbody tr")).map((tr) => ({
+      task: tr.querySelector(".act-task")?.value ?? "",
+      owner: tr.querySelector(".act-owner")?.value ?? "",
+      date: tr.querySelector(".act-date")?.value ?? "",
+      status: tr.querySelector(".act-status")?.value ?? "In Progress"
+    }));
+
+    return {
+      currentStep: this.wizard.currentStep,
+      finalized: this.wizard.finalized,
+      fields,
+      householdRows,
+      customExpenses,
+      skills,
+      actions,
+      meta: {
+        memberName: val("#s0-fullname"),
+        startDate: val("#s0-start-date"),
+        ward: val("#s0-ward"),
+        stake: val("#s0-stake"),
+        specialist: val("#s0-specialist"),
+        confirmAccurate: checked("#s6-confirm-accurate"),
+        confirmFollowup: checked("#s6-confirm-followup")
       }
     };
-  });
+  }
+
+  applySavedState(state) {
+    if (!state || typeof state !== "object") return;
+
+    if (Array.isArray(state.householdRows) && state.householdRows.length > 0) {
+      const tbody = document.querySelector("#s0-household-tbody");
+      if (tbody) {
+        tbody.innerHTML = "";
+        state.householdRows.forEach((item) => {
+          const tr = createHouseholdRowElement();
+          tr.querySelector(".hh-name").value = item.name ?? "";
+          tr.querySelector(".hh-rel").value = item.rel ?? "";
+          tr.querySelector(".hh-age").value = item.age ?? "";
+          tr.querySelector(".hh-occ").value = item.occ ?? "";
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    if (Array.isArray(state.customExpenses) && state.customExpenses.length > 0) {
+      const container = document.querySelector("#custom-expenses-list");
+      if (container) {
+        container.innerHTML = "";
+        state.customExpenses.forEach((item) => {
+          const row = createCustomExpenseRowElement();
+          row.querySelector(".custom-exp-label").value = item.label ?? "";
+          row.querySelector(".custom-exp-amount").value = item.amount ?? "0";
+          container.appendChild(row);
+        });
+      }
+    }
+
+    if (Array.isArray(state.skills) && state.skills.length > 0) {
+      const tbody = document.querySelector("#s3-skills-tbody");
+      if (tbody) {
+        tbody.innerHTML = "";
+        state.skills.forEach((item) => {
+          const tr = createSkillRowElement();
+          tr.querySelector(".skill-name").value = item.name ?? "";
+          tr.querySelector(".skill-avail").value = item.avail ?? "";
+          tr.querySelector(".skill-pot").value = item.pot ?? "0";
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    if (Array.isArray(state.actions) && state.actions.length > 0) {
+      const tbody = document.querySelector("#s4-actions-tbody");
+      if (tbody) {
+        tbody.innerHTML = "";
+        state.actions.forEach((item) => {
+          const tr = createActionRowElement();
+          tr.querySelector(".act-task").value = item.task ?? "";
+          tr.querySelector(".act-owner").value = item.owner ?? "";
+          tr.querySelector(".act-date").value = item.date ?? "";
+          if (item.status) tr.querySelector(".act-status").value = item.status;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    if (state.fields && typeof state.fields === "object") {
+      Object.entries(state.fields).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.type === "checkbox") {
+          el.checked = Boolean(value);
+        } else {
+          el.value = value ?? "";
+        }
+      });
+    }
+
+    if (state.finalized) {
+      this.wizard.finalizePlan();
+    }
+  }
+
+  syncAllViews() {
+    const memberName = document.querySelector("#s0-fullname")?.value ?? "";
+    const startDate = document.querySelector("#s0-start-date")?.value ?? "";
+    const ward = document.querySelector("#s0-ward")?.value ?? "";
+    const stake = document.querySelector("#s0-stake")?.value ?? "";
+    const specialist = document.querySelector("#s0-specialist")?.value ?? "";
+
+    const extraDependents = Array.from(document.querySelectorAll("#s0-household-tbody tr"))
+      .filter((tr) => {
+        const nameVal = tr.querySelector(".hh-name")?.value.trim();
+        const relVal = tr.querySelector(".hh-rel")?.value.trim();
+        const ageVal = tr.querySelector(".hh-age")?.value.trim();
+        return Boolean(nameVal || relVal || (ageVal && Number(ageVal) > 0));
+      }).length;
+
+    const householdCount = (memberName.trim() ? 1 : 0) + extraDependents;
+
+    renderContextHeaders({
+      memberName,
+      startDate,
+      ward,
+      stake,
+      specialist,
+      householdCount: Math.max(1, householdCount)
+    });
+
+    const needsGapAmounts = Array.from(document.querySelectorAll(".s1-calc")).map(
+      (inp) => Number.parseFloat(inp.value) || 0
+    );
+    const immediateCount = document.querySelectorAll(".imm-chip:checked").length;
+    const longTermCount = document.querySelectorAll(".lt-chip:checked").length;
+
+    renderNeedsSummary(
+      calculateNeedsSummary({
+        gapAmounts: needsGapAmounts,
+        immediateCount,
+        longTermCount
+      })
+    );
+
+    const incomeAmounts = Array.from(document.querySelectorAll(".inc-input")).map(
+      (inp) => Number.parseFloat(inp.value) || 0
+    );
+    const baseExpenseAmounts = Array.from(document.querySelectorAll(".exp-input")).map(
+      (inp) => Number.parseFloat(inp.value) || 0
+    );
+    const customExpenseAmounts = Array.from(document.querySelectorAll(".custom-exp-amount")).map(
+      (inp) => Number.parseFloat(inp.value) || 0
+    );
+
+    const budgetSummary = calculateBudgetSummary({
+      incomeAmounts,
+      expenseAmounts: [...baseExpenseAmounts, ...customExpenseAmounts]
+    });
+    renderBudgetSummary(budgetSummary);
+
+    const materialItems = Array.from(document.querySelectorAll("#s3-material-rows .resource-item")).map(
+      (row) => ({
+        active: Boolean(row.querySelector(".res-active")?.checked),
+        value: Number.parseFloat(row.querySelector(".res-val")?.value) || 0
+      })
+    );
+    const skillPotentials = Array.from(document.querySelectorAll("#s3-skills-tbody .skill-pot")).map(
+      (inp) => Number.parseFloat(inp.value) || 0
+    );
+    const supportCount = document.querySelectorAll(".net-check:checked").length;
+
+    renderResourcesSummary(
+      calculateResourcesSummary({
+        materialItems,
+        skillPotentials,
+        supportCount
+      })
+    );
+
+    const goalTitle = document.querySelector("#s4-p1-goal")?.value ?? "";
+    const goalTarget = Number.parseFloat(document.querySelector("#s4-p1-target")?.value) || 0;
+    const serviceHours = Number.parseFloat(document.querySelector("#s5-hours")?.value) || 0;
+    const serviceDescription = document.querySelector("#s5-agreed-desc")?.value ?? "";
+    const mentorName = document.querySelector("#s4-mentor")?.value ?? "";
+    const followUpFrequency = document.querySelector("#s4-check-freq")?.value ?? "";
+
+    renderExecutiveSummary({
+      budget: budgetSummary,
+      goalTitle,
+      goalTarget,
+      serviceHours,
+      serviceDescription,
+      mentorName,
+      followUpFrequency
+    });
+  }
+
+  scheduleAutosave(extra = {}) {
+    window.clearTimeout(this.saveTimer);
+    this.saveTimer = window.setTimeout(() => {
+      const snapshot = {
+        ...this.collectFormState(),
+        ...extra
+      };
+      const result = this.storage.savePlan(snapshot);
+      const indicator = document.querySelector("#autosave-indicator");
+      if (indicator && result.success) {
+        indicator.textContent = this.storage.formatSavedStatus(result.savedAt);
+      }
+    }, AUTOSAVE_DELAY_MS);
+  }
 }
 
-function initDynamicTables() {
-  $("#btn-add-household")?.addEventListener("click", () => {
-    const tbody = $("#s0-household-tbody");
-    if (!tbody) return;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input type="text" class="cell-input hh-name" placeholder="Member name" /></td>
-      <td><input type="text" class="cell-input hh-rel" placeholder="Spouse / Child" /></td>
-      <td><input type="number" class="cell-input hh-age" min="0" max="120" placeholder="0" /></td>
-      <td><input type="text" class="cell-input hh-occ" placeholder="Job or school grade" /></td>
-      <td class="th-center"><button type="button" class="btn-row-del" title="Remove row">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-    attachRowDeleteListeners(tbody);
-    syncContextHeaders();
-  });
-
-  $("#btn-add-expense")?.addEventListener("click", () => {
-    const list = $("#custom-expenses-list");
-    if (!list) return;
-    const row = document.createElement("div");
-    row.className = "custom-exp-row";
-    row.innerHTML = `
-      <input type="text" class="cell-input custom-exp-label" placeholder="Additional monthly expense description" />
-      <div class="currency-input">
-        <span>$</span>
-        <input type="number" step="0.01" min="0" class="custom-exp-amount" value="0" />
-      </div>
-      <button type="button" class="btn-row-del" title="Remove expense">✕</button>
-    `;
-    list.appendChild(row);
-
-    $(".custom-exp-amount", row)?.addEventListener("input", recalculateBudget);
-    $(".btn-row-del", row)?.addEventListener("click", () => {
-      row.remove();
-      recalculateBudget();
-    });
-  });
-
-  $("#btn-add-skill")?.addEventListener("click", () => {
-    const tbody = $("#s3-skills-tbody");
-    if (!tbody) return;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input type="text" class="cell-input skill-name" placeholder="e.g., Home repairs, tutoring, baking" /></td>
-      <td><input type="text" class="cell-input skill-avail" placeholder="e.g., Weekends (6 hrs/wk)" /></td>
-      <td><input type="number" step="0.01" min="0" class="cell-input skill-pot" value="0" /></td>
-      <td class="th-center"><button type="button" class="btn-row-del" title="Remove row">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-    $$("input", tr).forEach((inp) => inp.addEventListener("input", recalculateResources));
-    attachRowDeleteListeners(tbody);
-  });
-
-  $("#btn-add-action")?.addEventListener("click", () => {
-    const tbody = $("#s4-actions-tbody");
-    if (!tbody) return;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input type="text" class="cell-input act-task" placeholder="Specific action step" /></td>
-      <td><input type="text" class="cell-input act-owner" placeholder="Person responsible" /></td>
-      <td><input type="date" class="cell-input act-date" /></td>
-      <td>
-        <select class="cell-input act-status">
-          <option value="In Progress">In Progress</option>
-          <option value="Pending">Pending</option>
-          <option value="Scheduled">Scheduled</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </td>
-      <td class="th-center"><button type="button" class="btn-row-del" title="Remove row">✕</button></td>
-    `;
-    tbody.appendChild(tr);
-    attachRowDeleteListeners(tbody);
-  });
-
-  ["#s0-household-tbody", "#s3-skills-tbody", "#s4-actions-tbody"].forEach((sel) => {
-    const el = $(sel);
-    if (el) attachRowDeleteListeners(el);
-  });
-}
-
-function initNavigationAndActions() {
-  $$(".stepper-item").forEach((item) => {
-    item.addEventListener("click", () => {
-      setActiveStep(item.dataset.step);
-    });
-  });
-
-  $$(".btn-nav-next").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (btn.id === "btn-finalize-plan") {
-        const accurate = $("#s6-confirm-accurate")?.checked;
-        const followup = $("#s6-confirm-followup")?.checked;
-        const statusEl = $("#s6-final-status");
-        const badgeEl = $("#file-status-badge");
-
-        if (!accurate || !followup) {
-          if (statusEl) {
-            statusEl.textContent = "Please check both commitment boxes above before finalizing.";
-          }
-          return;
-        }
-        state.finalized = true;
-        if (statusEl) {
-          statusEl.textContent = "Plan reviewed and marked ready for family & advisor follow-up ✓";
-        }
-        if (badgeEl) {
-          badgeEl.textContent = "Ready";
-        }
-        return;
-      }
-      if (btn.dataset.next !== undefined) {
-        setActiveStep(btn.dataset.next);
-      }
-    });
-  });
-
-  $$(".btn-nav-prev").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (btn.dataset.prev !== undefined) {
-        setActiveStep(btn.dataset.prev);
-      }
-    });
-  });
-
-  $("#btn-jump-step2")?.addEventListener("click", () => setActiveStep(2));
-
-  $("#btn-new-tip")?.addEventListener("click", () => {
-    state.tipIndex = (state.tipIndex + 1) % REFLECTION_TIPS.length;
-    const tip = REFLECTION_TIPS[state.tipIndex];
-    if ($("#reflection-quote")) $("#reflection-quote").textContent = tip.quote;
-    if ($("#principle-heading")) $("#principle-heading").textContent = tip.heading;
-    if ($("#principle-body")) $("#principle-body").textContent = tip.body;
-  });
-
-  const triggerPrint = () => window.print();
-  $("#btn-print-view")?.addEventListener("click", triggerPrint);
-  $("#btn-footer-print")?.addEventListener("click", triggerPrint);
-
-  $("#btn-call-specialist")?.addEventListener("click", () => {
-    const contact = ($("#s0-bishop-phone")?.value || "").trim() || "your assigned specialist or ward leader";
-    alert(`Contact info: ${contact}`);
-  });
-
-  $("#btn-msg-specialist")?.addEventListener("click", () => {
-    const name = ($("#s0-specialist")?.value || "").trim() || "your Self-Reliance Specialist";
-    alert(`Prepare your budget and action plan notes to share with ${name}.`);
-  });
-
-  ["#s0-fullname", "#s0-start-date", "#s0-ward", "#s0-stake", "#s0-specialist"].forEach((id) => {
-    $(id)?.addEventListener("input", syncContextHeaders);
-  });
-
-  $$(".s1-calc, .imm-chip, .lt-chip").forEach((el) => {
-    el.addEventListener("input", recalculateStep1);
-    el.addEventListener("change", recalculateStep1);
-  });
-
-  $$(".inc-input, .exp-input").forEach((el) => {
-    el.addEventListener("input", recalculateBudget);
-  });
-
-  $$(".res-active, .res-val, .skill-pot, .net-check").forEach((el) => {
-    el.addEventListener("input", recalculateResources);
-    el.addEventListener("change", recalculateResources);
-  });
-
-  ["#s4-p1-goal", "#s4-p1-target", "#s4-mentor", "#s4-check-freq", "#s5-hours", "#s5-agreed-desc"].forEach((id) => {
-    $(id)?.addEventListener("input", updateExecutiveSummary);
-  });
-}
-
-// ============================================================================
-// Bootstrap
-// ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  initDynamicTables();
-  initNavigationAndActions();
-  syncContextHeaders();
-  recalculateStep1();
-  recalculateBudget();
-  recalculateResources();
-  updateExecutiveSummary();
-  setActiveStep(0);
+  const app = new SelfRelianceApp();
+  app.init();
 });
