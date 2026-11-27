@@ -20,14 +20,6 @@ function setText(selector, text, root = document) {
 
 /**
  * Synchronizes member, date, unit, stake, household size, and specialist across views.
- * @param {{
- *   memberName?: string,
- *   startDate?: string,
- *   ward?: string,
- *   stake?: string,
- *   specialist?: string,
- *   householdCount?: number
- * }} context
  */
 export function renderContextHeaders(context = {}) {
   const memberRaw = (context.memberName || "").trim();
@@ -67,11 +59,6 @@ export function renderContextHeaders(context = {}) {
 
 /**
  * Renders Step 1 needs diagnostic summary cards.
- * @param {{
- *   formattedGap?: string,
- *   immediateCount?: number,
- *   longTermCount?: number
- * }} summary
  */
 export function renderNeedsSummary(summary = {}) {
   setText("#s1-total-gap", summary.formattedGap || "$0.00");
@@ -81,15 +68,6 @@ export function renderNeedsSummary(summary = {}) {
 
 /**
  * Renders Step 2 budget totals, net balance card, and sidebar balance readout.
- * @param {{
- *   formattedIncome?: string,
- *   formattedExpenses?: string,
- *   formattedNet?: string,
- *   formattedNetMonthly?: string,
- *   status?: "surplus" | "deficit" | "balanced",
- *   badgeLabel?: string,
- *   description?: string
- * }} budget
  */
 export function renderBudgetSummary(budget = {}) {
   setText("#s2-total-income", budget.formattedIncome || "$0.00 USD");
@@ -109,10 +87,6 @@ export function renderBudgetSummary(budget = {}) {
 
 /**
  * Renders Step 3 resource summary lines.
- * @param {{
- *   summaryLine?: string,
- *   potentialLine?: string
- * }} summary
  */
 export function renderResourcesSummary(summary = {}) {
   setText(
@@ -127,20 +101,6 @@ export function renderResourcesSummary(summary = {}) {
 
 /**
  * Renders Step 6 Executive Summary cards and sidebar file status.
- * @param {{
- *   budget?: {
- *     formattedIncome?: string,
- *     formattedExpenses?: string,
- *     formattedNetMonthly?: string,
- *     badgeLabel?: string
- *   },
- *   goalTitle?: string,
- *   goalTarget?: number,
- *   serviceHours?: number,
- *   serviceDescription?: string,
- *   mentorName?: string,
- *   followUpFrequency?: string
- * }} execData
  */
 export function renderExecutiveSummary(execData = {}) {
   const budget = execData.budget || {};
@@ -176,7 +136,6 @@ export function renderExecutiveSummary(execData = {}) {
 
 /**
  * Creates a table row element for household members (Step 0).
- * @returns {HTMLTableRowElement}
  */
 export function createHouseholdRowElement() {
   const tr = document.createElement("tr");
@@ -192,7 +151,6 @@ export function createHouseholdRowElement() {
 
 /**
  * Creates a custom monthly expense row element (Step 2).
- * @returns {HTMLDivElement}
  */
 export function createCustomExpenseRowElement() {
   const row = document.createElement("div");
@@ -210,7 +168,6 @@ export function createCustomExpenseRowElement() {
 
 /**
  * Creates a table row element for skills/trades (Step 3).
- * @returns {HTMLTableRowElement}
  */
 export function createSkillRowElement() {
   const tr = document.createElement("tr");
@@ -225,7 +182,6 @@ export function createSkillRowElement() {
 
 /**
  * Creates a table row element for action plan items (Step 4).
- * @returns {HTMLTableRowElement}
  */
 export function createActionRowElement() {
   const tr = document.createElement("tr");
@@ -244,4 +200,167 @@ export function createActionRowElement() {
     <td class="th-center"><button type="button" class="btn-row-del" title="Remove row">✕</button></td>
   `;
   return tr;
+}
+
+/**
+ * Populates the 2-page official Self-Reliance Plan print template from current form inputs.
+ */
+export function populateOfficialPrintForm() {
+  const getVal = (sel) => (queryOne(sel)?.value || "").trim();
+  const getNum = (sel) => {
+    const raw = Number.parseFloat(queryOne(sel)?.value);
+    return Number.isFinite(raw) && raw > 0 ? raw : 0;
+  };
+
+  // Member Name (Page 1 & Page 2)
+  const memberName = getVal("#s0-fullname");
+  setText("#print-member-name", memberName);
+  setText("#print-member-name-p2", memberName);
+
+  // Step 1: Needs
+  const immChips = queryAll(".imm-chip:checked")
+    .map((cb) => cb.parentElement?.textContent.trim())
+    .filter(Boolean);
+  const ltChips = queryAll(".lt-chip:checked")
+    .map((cb) => cb.parentElement?.textContent.trim())
+    .filter(Boolean);
+  const immDesc = getVal("#s1-imm-desc");
+  const ltDesc = getVal("#s1-lt-desc");
+
+  const step1Lines = [];
+  if (immChips.length || immDesc) {
+    step1Lines.push(`Immediate needs: ${[immChips.join(", "), immDesc].filter(Boolean).join(" — ")}`);
+  }
+  if (ltChips.length || ltDesc) {
+    step1Lines.push(`Longer-term needs: ${[ltChips.join(", "), ltDesc].filter(Boolean).join(" — ")}`);
+  }
+  setText("#print-step1-needs", step1Lines.join("\n\n"));
+
+  // Step 2: Income
+  const incFamily = getNum("#inc-wages");
+  const incOther = getNum("#inc-other");
+  const incGov = getNum("#inc-aid");
+  const incTotal = incFamily + incOther + incGov;
+
+  setText("#print-inc-family", formatCurrency(incFamily));
+  setText("#print-inc-other", formatCurrency(incOther));
+  setText("#print-inc-gov", formatCurrency(incGov));
+  setText("#print-inc-total", formatCurrency(incTotal));
+
+  // Step 2: Base Expenses
+  const expTithes = getNum("#exp-tithes");
+  const expFood = getNum("#exp-food");
+  const expHousing = getNum("#exp-housing");
+  const expUtilities = getNum("#exp-utilities");
+  const expMedical = getNum("#exp-medical");
+  const expTransport = getNum("#exp-transport");
+  const expEducation = getNum("#exp-edu");
+  const expDebt = getNum("#exp-debt");
+  const expClothing = getNum("#exp-other");
+
+  setText("#print-exp-tithes", formatCurrency(expTithes));
+  setText("#print-exp-food", formatCurrency(expFood));
+  setText("#print-exp-housing", formatCurrency(expHousing));
+  setText("#print-exp-water", "$0.00");
+  setText("#print-exp-medical", formatCurrency(expMedical));
+  setText("#print-exp-transport", formatCurrency(expTransport));
+  setText("#print-exp-education", formatCurrency(expEducation));
+  setText("#print-exp-debt", formatCurrency(expDebt));
+  setText("#print-exp-clothing", formatCurrency(expClothing));
+  setText("#print-exp-utilities", formatCurrency(expUtilities));
+
+  // Custom expenses -> up to 4 "Other (specify)" rows
+  const customRows = queryAll(".custom-exp-row");
+  let customSum = 0;
+  for (let i = 0; i < 4; i += 1) {
+    const row = customRows[i];
+    const labelEl = queryOne(`#print-other-label-${i + 1}`);
+    const valEl = queryOne(`#print-other-val-${i + 1}`);
+    if (row) {
+      const lbl = queryOne(".custom-exp-label", row)?.value.trim() || "Other (specify)";
+      const amt = Number.parseFloat(queryOne(".custom-exp-amount", row)?.value) || 0;
+      const safeAmt = amt > 0 ? amt : 0;
+      customSum += safeAmt;
+      if (labelEl) labelEl.textContent = lbl;
+      if (valEl) valEl.textContent = safeAmt > 0 ? formatCurrency(safeAmt) : "";
+    } else {
+      if (labelEl) labelEl.textContent = "Other (specify)";
+      if (valEl) valEl.textContent = "";
+    }
+  }
+
+  const baseSum =
+    expTithes +
+    expFood +
+    expHousing +
+    expUtilities +
+    expMedical +
+    expTransport +
+    expEducation +
+    expDebt +
+    expClothing;
+  setText("#print-exp-total", formatCurrency(baseSum + customSum));
+
+  // Reducible expenses note
+  const reducibleNote = getVal("#s2-adjustments");
+  setText("#print-red-label-1", reducibleNote || "\u00A0");
+  setText("#print-red-label-2", "\u00A0");
+  setText("#print-red-label-3", "\u00A0");
+  setText("#print-red-val-1", "");
+  setText("#print-red-val-2", "");
+  setText("#print-red-val-3", "");
+  setText("#print-red-total", formatCurrency(0));
+
+  // Step 3: Other Resources
+  const skillsList = queryAll("#s3-skills-tbody tr")
+    .map((tr) => {
+      const name = queryOne(".skill-name", tr)?.value.trim();
+      const avail = queryOne(".skill-avail", tr)?.value.trim();
+      return name ? `${name}${avail ? ` (${avail})` : ""}` : "";
+    })
+    .filter(Boolean);
+
+  const materialsList = queryAll("#s3-material-rows .resource-item")
+    .filter((row) => queryOne(".res-active", row)?.checked)
+    .map((row) => queryOne(".res-title", row)?.textContent.trim())
+    .filter(Boolean);
+
+  setText("#print-step3-individual", [...skillsList, ...materialsList].join(" · "));
+  setText("#print-step3-family", getVal("#s3-plan"));
+  setText(
+    "#print-step3-community",
+    queryAll(".net-check:checked")
+      .map((cb) => cb.parentElement?.textContent.trim())
+      .filter(Boolean)
+      .join(", ")
+  );
+
+  // Step 4: Action Table (6 rows)
+  const goalGoal = getVal("#s4-p1-goal");
+  const actionRows = queryAll("#s4-actions-tbody tr");
+  const printTbody = queryOne("#print-step4-tbody");
+  if (printTbody) {
+    const targetRows = queryAll("tr", printTbody);
+    targetRows.forEach((tr, idx) => {
+      const cells = queryAll("td", tr);
+      const srcRow = actionRows[idx];
+      const task = srcRow ? queryOne(".act-task", srcRow)?.value.trim() : "";
+      const owner = srcRow ? queryOne(".act-owner", srcRow)?.value.trim() : "";
+      const date = srcRow ? queryOne(".act-date", srcRow)?.value.trim() : "";
+
+      if (cells[0]) cells[0].textContent = idx === 0 && goalGoal ? goalGoal : owner;
+      if (cells[1]) cells[1].textContent = task;
+      if (cells[2]) cells[2].textContent = date;
+    });
+  }
+
+  // Step 5: Work or Service
+  setText("#print-step5-ideas", getVal("#s5-pre-notes"));
+  setText("#print-step5-assignment", getVal("#s5-agreed-desc"));
+
+  // Commitment & Dates
+  setText("#print-member-sign", getVal("#s6-sig-member") || memberName);
+  setText("#print-member-date", getVal("#s6-date-member") || getVal("#s0-start-date"));
+  setText("#print-spouse-sign", getVal("#s6-sig-spouse"));
+  setText("#print-spouse-date", getVal("#s6-date-spouse"));
 }

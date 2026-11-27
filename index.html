@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap"
         rel="stylesheet" />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/print.css" />
 </head>
 
 <body>
@@ -1439,6 +1440,280 @@
     </div>
 
     <script type="module" src="js/main.js"></script>
+
+    <!-- Official 2-Page Self-Reliance Form (Print / PDF View Only) -->
+    <section id="official-print-document" aria-hidden="true">
+        <!-- PAGE 1 -->
+        <div class="official-page">
+            <header class="official-banner">
+                <div class="official-church-mark">
+                    <span class="small-line">THE CHURCH OF</span>
+                    <span class="main-line">JESUS CHRIST</span>
+                    <span class="small-line">OF LATTER-DAY SAINTS</span>
+                </div>
+                <h1 class="official-banner-title">Self-Reliance Plan</h1>
+            </header>
+    
+            <p class="official-intro">
+                Use this form to create your self-reliance plan. Your bishop, branch president, Relief Society president,
+                elders quorum president, or other leaders can help you.
+            </p>
+    
+            <div class="official-sec-bar">Member Information</div>
+            <div class="official-field-label">Name</div>
+            <div class="official-line-value" id="print-member-name"></div>
+    
+            <div class="official-sec-bar">Step 1: What Needs Do I Have?</div>
+            <p class="official-sub-note">
+                Immediate needs may include food, clothing, medical or emotional care, or housing. Longer-term needs may
+                include education or better employment. Identify your needs in the space below.
+            </p>
+            <div class="official-box-multiline official-box-step1" id="print-step1-needs"></div>
+    
+            <div class="official-sec-bar">Step 2: What Income and Expenses Do I Have?</div>
+    
+            <div class="official-group-title">Monthly income</div>
+            <table class="official-table">
+                <colgroup>
+                    <col style="width: 72%;" />
+                    <col style="width: 28%;" />
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>Income of all family members</td>
+                        <td class="amt-col" id="print-inc-family">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Other financial resources (family, other)</td>
+                        <td class="amt-col" id="print-inc-other">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Government assistance (financial, food, housing, etc.)</td>
+                        <td class="amt-col" id="print-inc-gov">$0.00</td>
+                    </tr>
+                    <tr class="official-total-row">
+                        <td class="official-total-label">Total</td>
+                        <td class="official-total-val" id="print-inc-total">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+    
+            <div class="official-group-title">Monthly expenses</div>
+            <table class="official-table">
+                <colgroup>
+                    <col style="width: 31%;" />
+                    <col style="width: 19%;" />
+                    <col style="width: 31%;" />
+                    <col style="width: 19%;" />
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>Tithes and offerings</td>
+                        <td class="amt-col" id="print-exp-tithes">$0.00</td>
+                        <td class="mid-divider">Debt payments</td>
+                        <td class="amt-col" id="print-exp-debt">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Food</td>
+                        <td class="amt-col" id="print-exp-food">$0.00</td>
+                        <td class="mid-divider">Clothing</td>
+                        <td class="amt-col" id="print-exp-clothing">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Housing</td>
+                        <td class="amt-col" id="print-exp-housing">$0.00</td>
+                        <td class="mid-divider">Electricity, fuel</td>
+                        <td class="amt-col" id="print-exp-utilities">$0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Water</td>
+                        <td class="amt-col" id="print-exp-water">$0.00</td>
+                        <td class="mid-divider" id="print-other-label-1">Other (specify)</td>
+                        <td class="amt-col" id="print-other-val-1"></td>
+                    </tr>
+                    <tr>
+                        <td>Medical</td>
+                        <td class="amt-col" id="print-exp-medical">$0.00</td>
+                        <td class="mid-divider" id="print-other-label-2">Other (specify)</td>
+                        <td class="amt-col" id="print-other-val-2"></td>
+                    </tr>
+                    <tr>
+                        <td>Transportation</td>
+                        <td class="amt-col" id="print-exp-transport">$0.00</td>
+                        <td class="mid-divider" id="print-other-label-3">Other (specify)</td>
+                        <td class="amt-col" id="print-other-val-3"></td>
+                    </tr>
+                    <tr>
+                        <td>Education</td>
+                        <td class="amt-col" id="print-exp-education">$0.00</td>
+                        <td class="mid-divider" id="print-other-label-4">Other (specify)</td>
+                        <td class="amt-col" id="print-other-val-4"></td>
+                    </tr>
+                    <tr class="official-total-row">
+                        <td colspan="3" class="official-total-label">Total</td>
+                        <td class="official-total-val" id="print-exp-total">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+    
+            <div class="official-group-title">Expenses that can be reduced or eliminated</div>
+            <table class="official-table">
+                <colgroup>
+                    <col style="width: 72%;" />
+                    <col style="width: 28%;" />
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td id="print-red-label-1">&nbsp;</td>
+                        <td class="amt-col" id="print-red-val-1"></td>
+                    </tr>
+                    <tr>
+                        <td id="print-red-label-2">&nbsp;</td>
+                        <td class="amt-col" id="print-red-val-2"></td>
+                    </tr>
+                    <tr>
+                        <td id="print-red-label-3">&nbsp;</td>
+                        <td class="amt-col" id="print-red-val-3"></td>
+                    </tr>
+                    <tr class="official-total-row">
+                        <td class="official-total-label">Total</td>
+                        <td class="official-total-val" id="print-red-total">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+    
+            <div class="official-footer-note">
+                Note: Data collection and sharing is subject to the Church’s privacy notice, available at
+                privacynotice.churchofjesuschrist.org.
+                <div class="official-footer-meta">
+                    <span>SelfReliancePath — Official Plan Format</span>
+                    <span>© 2018 by Intellectual Reserve, Inc. All rights reserved. 9/18. Self-Reliance Plan. PD60007387
+                        002</span>
+                </div>
+            </div>
+        </div>
+    
+        <!-- PAGE 2 -->
+        <div class="official-page">
+            <h2 class="official-cont-title">Self-Reliance Plan (continued)</h2>
+            <div class="official-field-label">Name</div>
+            <div class="official-line-value" id="print-member-name-p2"></div>
+    
+            <div class="official-sec-bar">Step 3: What Other Resources Do I Have?</div>
+            <div class="official-field-label">Individual resources and skills</div>
+            <div class="official-box-multiline official-box-step3" id="print-step3-individual"></div>
+    
+            <div class="official-field-label">Help and resources from other family members (parents, children, siblings,
+                others)</div>
+            <div class="official-box-multiline official-box-step3" id="print-step3-family"></div>
+    
+            <div class="official-field-label">Relevant community resources</div>
+            <div class="official-box-multiline official-box-step3" id="print-step3-community"></div>
+    
+            <div class="official-sec-bar">Step 4: What Is My Personal or Family Plan to Become More Self-Reliant?</div>
+            <p class="official-sub-note">As part of your plan, consider participating in a self-reliance group.</p>
+            <table class="official-action-table">
+                <colgroup>
+                    <col style="width: 44%;" />
+                    <col style="width: 36%;" />
+                    <col style="width: 20%;" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Resources and skills needed to become self-reliant</th>
+                        <th>Steps to take</th>
+                        <th>By when</th>
+                    </tr>
+                </thead>
+                <tbody id="print-step4-tbody">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+    
+            <div class="official-sec-bar">Step 5: What Work or Service Will I Give in Return for Any Assistance I Receive?
+            </div>
+            <div class="official-field-label">Ideas to share with the bishop or branch president</div>
+            <div class="official-box-multiline official-box-step5" id="print-step5-ideas"></div>
+    
+            <div class="official-field-label">After counseling with the bishop or branch president, describe the work or
+                service assignment you will perform</div>
+            <div class="official-box-multiline official-box-step5" id="print-step5-assignment"></div>
+    
+            <div class="official-sec-bar">Commitment</div>
+            <table class="official-sign-table">
+                <colgroup>
+                    <col style="width: 72%;" />
+                    <col style="width: 28%;" />
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>Member’s signature: <strong id="print-member-sign"></strong></td>
+                        <td class="date-cell">Date: <span id="print-member-date"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Spouse’s signature: <strong id="print-spouse-sign"></strong></td>
+                        <td class="date-cell">Date: <span id="print-spouse-date"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+    
+            <div class="official-footer-note">
+                <div class="official-footer-meta">
+                    <span>Page 2 of 2</span>
+                    <span>9/18. PD60007387 002</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="module">
+        import { populateOfficialPrintForm } from "./js/RenderUtils.mjs";
+
+        window.addEventListener("beforeprint", () => {
+            populateOfficialPrintForm();
+        });
+
+        ["#btn-print-view", "#btn-footer-print"].forEach((selector) => {
+            const btn = document.querySelector(selector);
+            if (btn) {
+                btn.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    populateOfficialPrintForm();
+                    window.print();
+                });
+            }
+        });
+    </script>
+    
 </body>
 
-</html>
+</html> 
