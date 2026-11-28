@@ -100,6 +100,65 @@ export function renderResourcesSummary(summary = {}) {
 }
 
 /**
+ * Renders structured resource catalog suggestions for a given wizard step (e.g. Step 3 or Step 4).
+ * @param {number} stepNumber
+ * @param {Array<Record<string, unknown>>} items
+ */
+export function renderStepResourceCatalog(stepNumber, items = []) {
+  const container = queryOne(`#s${stepNumber}-resource-catalog`);
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (!Array.isArray(items) || items.length === 0) return;
+
+  const heading = document.createElement("div");
+  heading.className = "catalog-head";
+  heading.innerHTML = `
+    <span class="block-pill">RECOMMENDED RESOURCES · STEP ${stepNumber}</span>
+    <small>Practical options &amp; self-reliance pathways</small>
+  `;
+  container.appendChild(heading);
+
+  const grid = document.createElement("div");
+  grid.className = "grid-2 catalog-grid";
+
+  items.forEach((res) => {
+    const card = document.createElement("article");
+    card.className = "catalog-card";
+
+    const category = document.createElement("span");
+    category.className = "pillar-tag";
+    category.textContent = `${res.category || "Resource"} · ${res.estimatedDuration || "Flexible"}`;
+
+    const title = document.createElement("h4");
+    title.textContent = res.title || "Self-Reliance Resource";
+
+    const desc = document.createElement("p");
+    desc.textContent = res.description || "";
+
+    const meta = document.createElement("small");
+    meta.className = "catalog-meta";
+    meta.textContent = `Eligibility: ${res.eligibility || "All members"} · Format: ${res.deliveryFormat || "Guide"}`;
+
+    card.append(category, title, desc, meta);
+
+    if (res.officialLink) {
+      const link = document.createElement("a");
+      link.className = "catalog-link";
+      link.href = res.officialLink;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Learn more ↗";
+      card.appendChild(link);
+    }
+
+    grid.appendChild(card);
+  });
+
+  container.appendChild(grid);
+}
+
+/**
  * Renders Step 6 Executive Summary cards and sidebar file status.
  */
 export function renderExecutiveSummary(execData = {}) {

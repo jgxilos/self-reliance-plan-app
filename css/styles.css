@@ -1340,3 +1340,92 @@ body {
         border: 1px solid #cccccc;
     }
 }
+
+/* ==========================================================================
+   Step Resource Catalog Suggestions (Steps 3 & 4)
+   ========================================================================== */
+.catalog-suggestions {
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.catalog-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.catalog-head small {
+    color: var(--text-muted, #64748b);
+    font-size: 0.85rem;
+}
+
+.catalog-grid.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.catalog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: var(--surface-card, #ffffff);
+    border: 1px solid var(--border-color, #dbe3ec);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.catalog-card h4 {
+    margin: 2px 0 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+}
+
+.catalog-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-secondary, #334155);
+}
+
+.catalog-meta {
+    display: block;
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--text-muted, #64748b);
+}
+
+.catalog-link {
+    align-self: flex-start;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--accent-color, #0f5c8d);
+}
+
+.catalog-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .catalog-grid.grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+
+    .catalog-suggestions,
+    .no-print {
+        display: none !important;
+    }
+}

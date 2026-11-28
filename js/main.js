@@ -12,6 +12,7 @@ import {
   renderNeedsSummary,
   renderBudgetSummary,
   renderResourcesSummary,
+  renderStepResourceCatalog,
   renderExecutiveSummary,
   createHouseholdRowElement,
   createCustomExpenseRowElement,
@@ -23,6 +24,8 @@ import { WizardController } from "./WizardController.mjs";
 import { ExternalServices } from "./ExternalServices.mjs";
 
 const AUTOSAVE_DELAY_MS = 350;
+const RESET_CONFIRM_MESSAGE =
+  "Are you sure you want to reset and clear the entire Self-Reliance Plan? All saved draft data in this browser will be removed.";
 
 class SelfRelianceApp {
   constructor() {
@@ -60,12 +63,111 @@ class SelfRelianceApp {
     const initialStep = Number.isInteger(savedState?.currentStep) ? savedState.currentStep : 0;
     this.wizard.goToStep(initialStep, { scrollToTop: false });
 
-    await this.loadExternalTips();
+    await Promise.all([
+      this.loadExternalTips(),
+      this.loadResourceCatalog()
+    ]);
   }
 
   async loadExternalTips() {
     const tips = await this.externalServices.getReflectionTips();
     this.wizard.setTips(tips);
+  }
+
+  async loadResourceCatalog() {
+    let catalog = null;
+
+    try {
+      const res = await fetch("./data/resources.json", { cache: "no-store" });
+      if (res.ok) {
+        catalog = await res.json();
+      }
+    } catch (err) {
+      console.error("Error loading local resource catalog:", err);
+    }
+
+    if (!catalog && typeof this.externalServices.loadLocalCatalog === "function") {
+      catalog = await this.externalServices.loadLocalCatalog();
+    }
+
+    const items = Array.isArray(catalog?.resourceCatalog)
+      ? catalog.resourceCatalog
+      : Array.isArray(catalog)
+        ? catalog
+        : [];
+
+    renderStepResourceCatalog(
+      3,
+      items.filter((item) => Number(item.step) === 3)
+    );
+    renderStepResourceCatalog(
+      4,
+      items.filter((item) => Number(item.step) === 4)
+    );
+  }
+
+  resetPlan() {
+    const confirmed = window.confirm(RESET_CONFIRM_MESSAGE);
+    if (!confirmed) return;
+
+    window.clearTimeout(this.saveTimer);
+    this.storage.clearPlan();
+    this.wizard.finalized = false;
+
+    document.querySelectorAll("input[id], select[id], textarea[id]").forEach((el) => {
+      if (el.closest("#official-print-document")) return;
+
+      if (el.type === "checkbox" || el.type === "radio") {
+        el.checked = false;
+      } else if (el.tagName === "SELECT") {
+        el.selectedIndex = 0;
+      } else if (el.type === "number") {
+        el.value = "0";
+      } else {
+        el.value = "";
+      }
+    });
+
+    const householdTbody = document.querySelector("#s0-household-tbody");
+    if (householdTbody) {
+      householdTbody.innerHTML = "";
+      householdTbody.appendChild(createHouseholdRowElement());
+    }
+
+    const customExpensesList = document.querySelector("#custom-expenses-list");
+    if (customExpensesList) {
+      customExpensesList.innerHTML = "";
+    }
+
+    const skillsTbody = document.querySelector("#s3-skills-tbody");
+    if (skillsTbody) {
+      skillsTbody.innerHTML = "";
+      skillsTbody.appendChild(createSkillRowElement());
+    }
+
+    const actionsTbody = document.querySelector("#s4-actions-tbody");
+    if (actionsTbody) {
+      actionsTbody.innerHTML = "";
+      actionsTbody.appendChild(createActionRowElement());
+    }
+
+    const statusEl = document.querySelector("#autosave-indicator");
+    if (statusEl) {
+      statusEl.textContent = "Plan cleared · Draft ready";
+    }
+
+    const finalStatusEl = document.querySelector("#s6-final-status");
+    if (finalStatusEl) {
+      finalStatusEl.textContent = "Ready to review and finalize";
+    }
+
+    const fileBadgeEl = document.querySelector("#file-status-badge");
+    if (fileBadgeEl) {
+      fileBadgeEl.textContent = "In Progress";
+    }
+
+    this.syncAllViews();
+    this.wizard.goToStep(0);
   }
 
   bindNavigationEvents() {
@@ -175,6 +277,10 @@ class SelfRelianceApp {
   bindActionButtons() {
     document.querySelector("#btn-new-tip")?.addEventListener("click", () => {
       this.wizard.cycleTip();
+    });
+
+    document.querySelector("#btn-reset-plan")?.addEventListener("click", () => {
+      this.resetPlan();
     });
 
     document.querySelector("#btn-finalize-plan")?.addEventListener("click", () => {

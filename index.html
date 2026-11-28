@@ -31,6 +31,9 @@
                     <span class="autosave-pill" id="autosave-indicator">
                         Your work is saved automatically ✓
                     </span>
+                    <button type="button" id="btn-reset-plan" class="btn-outline-sm">
+                        Reset / Clear Plan
+                    </button>
                     <button type="button" id="btn-print-view" class="btn-outline-sm">
                         Print / PDF View
                     </button>
@@ -919,6 +922,8 @@
                                             value="Assigned financial / career mentor" /> Assigned mentor</label>
                                 </div>
                             </div>
+
+                            <div id="s3-resource-catalog" class="catalog-suggestions no-print mt-16"></div>
                         </div>
 
                         <!-- Block 4 -->
@@ -1018,6 +1023,8 @@
                                     <input type="number" step="0.01" min="0" id="s4-p3-target" value="0" />
                                 </div>
                             </div>
+
+                            <div id="s4-resource-catalog" class="catalog-suggestions no-print mt-16"></div>
                         </div>
 
                         <!-- Block 2 -->
@@ -1453,25 +1460,26 @@
                 </div>
                 <h1 class="official-banner-title">Self-Reliance Plan</h1>
             </header>
-    
+
             <p class="official-intro">
-                Use this form to create your self-reliance plan. Your bishop, branch president, Relief Society president,
+                Use this form to create your self-reliance plan. Your bishop, branch president, Relief Society
+                president,
                 elders quorum president, or other leaders can help you.
             </p>
-    
+
             <div class="official-sec-bar">Member Information</div>
             <div class="official-field-label">Name</div>
             <div class="official-line-value" id="print-member-name"></div>
-    
+
             <div class="official-sec-bar">Step 1: What Needs Do I Have?</div>
             <p class="official-sub-note">
                 Immediate needs may include food, clothing, medical or emotional care, or housing. Longer-term needs may
                 include education or better employment. Identify your needs in the space below.
             </p>
             <div class="official-box-multiline official-box-step1" id="print-step1-needs"></div>
-    
+
             <div class="official-sec-bar">Step 2: What Income and Expenses Do I Have?</div>
-    
+
             <div class="official-group-title">Monthly income</div>
             <table class="official-table">
                 <colgroup>
@@ -1497,7 +1505,7 @@
                     </tr>
                 </tbody>
             </table>
-    
+
             <div class="official-group-title">Monthly expenses</div>
             <table class="official-table">
                 <colgroup>
@@ -1555,7 +1563,7 @@
                     </tr>
                 </tbody>
             </table>
-    
+
             <div class="official-group-title">Expenses that can be reduced or eliminated</div>
             <table class="official-table">
                 <colgroup>
@@ -1581,7 +1589,7 @@
                     </tr>
                 </tbody>
             </table>
-    
+
             <div class="official-footer-note">
                 Note: Data collection and sharing is subject to the Church’s privacy notice, available at
                 privacynotice.churchofjesuschrist.org.
@@ -1592,24 +1600,24 @@
                 </div>
             </div>
         </div>
-    
+
         <!-- PAGE 2 -->
         <div class="official-page">
             <h2 class="official-cont-title">Self-Reliance Plan (continued)</h2>
             <div class="official-field-label">Name</div>
             <div class="official-line-value" id="print-member-name-p2"></div>
-    
+
             <div class="official-sec-bar">Step 3: What Other Resources Do I Have?</div>
             <div class="official-field-label">Individual resources and skills</div>
             <div class="official-box-multiline official-box-step3" id="print-step3-individual"></div>
-    
+
             <div class="official-field-label">Help and resources from other family members (parents, children, siblings,
                 others)</div>
             <div class="official-box-multiline official-box-step3" id="print-step3-family"></div>
-    
+
             <div class="official-field-label">Relevant community resources</div>
             <div class="official-box-multiline official-box-step3" id="print-step3-community"></div>
-    
+
             <div class="official-sec-bar">Step 4: What Is My Personal or Family Plan to Become More Self-Reliant?</div>
             <p class="official-sub-note">As part of your plan, consider participating in a self-reliance group.</p>
             <table class="official-action-table">
@@ -1658,16 +1666,17 @@
                     </tr>
                 </tbody>
             </table>
-    
-            <div class="official-sec-bar">Step 5: What Work or Service Will I Give in Return for Any Assistance I Receive?
+
+            <div class="official-sec-bar">Step 5: What Work or Service Will I Give in Return for Any Assistance I
+                Receive?
             </div>
             <div class="official-field-label">Ideas to share with the bishop or branch president</div>
             <div class="official-box-multiline official-box-step5" id="print-step5-ideas"></div>
-    
+
             <div class="official-field-label">After counseling with the bishop or branch president, describe the work or
                 service assignment you will perform</div>
             <div class="official-box-multiline official-box-step5" id="print-step5-assignment"></div>
-    
+
             <div class="official-sec-bar">Commitment</div>
             <table class="official-sign-table">
                 <colgroup>
@@ -1685,7 +1694,7 @@
                     </tr>
                 </tbody>
             </table>
-    
+
             <div class="official-footer-note">
                 <div class="official-footer-meta">
                     <span>Page 2 of 2</span>
@@ -1713,7 +1722,7 @@
             }
         });
     </script>
-    
+
 </body>
 
-</html> 
+</html>
