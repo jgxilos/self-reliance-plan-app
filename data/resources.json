@@ -54,5 +54,103 @@
       "title": "Weekly Action Cadence",
       "detail": "Break each self-reliance goal into concrete weekly tasks with clear owners, target dates, and follow-up check-ins."
     }
+  ],
+  "resourceCatalog": [
+    {
+      "id": "res-01",
+      "step": 3,
+      "category": "Household Reserves",
+      "title": "3-Month Essential Pantry & Supply Audit",
+      "description": "Inventory non-perishable food, hygiene items, and household reserves to reduce short-term shopping spikes.",
+      "eligibility": "Individuals, families, and households preparing a stability plan",
+      "estimatedDuration": "1–2 weeks",
+      "officialLink": "https://providentliving.churchofjesuschrist.org/",
+      "focusArea": "Food & Household Stability",
+      "deliveryFormat": "Self-guided checklist"
+    },
+    {
+      "id": "res-02",
+      "step": 3,
+      "category": "Family & Extended Network",
+      "title": "Family Council & Shared Support Mapping",
+      "description": "Coordinate caregiving, transportation, or temporary family assistance with clear boundaries and mutual respect.",
+      "eligibility": "Members with extended family or household support connections",
+      "estimatedDuration": "Ongoing weekly check-in",
+      "officialLink": "https://www.churchofjesuschrist.org/self-reliance",
+      "focusArea": "Relational & Family Support",
+      "deliveryFormat": "Family council guide"
+    },
+    {
+      "id": "res-03",
+      "step": 3,
+      "category": "Community Aid",
+      "title": "Local Municipal, Utility & Food Assistance Directory",
+      "description": "Identify verified community food banks, public transit passes, and utility relief programs in your area.",
+      "eligibility": "Households experiencing temporary income gaps or high fixed bills",
+      "estimatedDuration": "1 week to apply",
+      "officialLink": "https://211.org/",
+      "focusArea": "Community & Civic Relief",
+      "deliveryFormat": "Local program lookup"
+    },
+    {
+      "id": "res-04",
+      "step": 3,
+      "category": "Mentorship & Ward Network",
+      "title": "Ward Self-Reliance Specialist & Career Networking",
+      "description": "Connect with assigned mentors, employment specialists, and local peers who can review resumes and leads.",
+      "eligibility": "Members seeking guidance, accountability, or job referrals",
+      "estimatedDuration": "Bi-weekly mentoring",
+      "officialLink": "https://www.churchofjesuschrist.org/self-reliance",
+      "focusArea": "Mentorship & Networking",
+      "deliveryFormat": "1-on-1 & group support"
+    },
+    {
+      "id": "res-05",
+      "step": 4,
+      "category": "Self-Reliance Group",
+      "title": "Personal Finances Self-Reliance Group",
+      "description": "Build practical budgeting habits, eliminate high-interest debt, and establish a starter emergency fund in USD.",
+      "eligibility": "Adults and young single adults committed to weekly group attendance",
+      "estimatedDuration": "8–12 weeks",
+      "officialLink": "https://www.churchofjesuschrist.org/self-reliance",
+      "focusArea": "Budgeting & Debt Reduction",
+      "deliveryFormat": "Peer group + workbook"
+    },
+    {
+      "id": "res-06",
+      "step": 4,
+      "category": "Employment Track",
+      "title": "Find a Better Job Action Track",
+      "description": "Clarify target roles, prepare a strong resume and interview pitch, and track weekly job-search milestones.",
+      "eligibility": "Job seekers, underemployed workers, or career transitioners",
+      "estimatedDuration": "6–10 weeks",
+      "officialLink": "https://www.churchofjesuschrist.org/self-reliance",
+      "focusArea": "Steady Employment",
+      "deliveryFormat": "Structured action group"
+    },
+    {
+      "id": "res-07",
+      "step": 4,
+      "category": "Enterprise & Trades",
+      "title": "Starting and Growing My Business",
+      "description": "Validate customer demand, price services accurately, and set weekly sales and cash-flow targets.",
+      "eligibility": "Entrepreneurs, tradespeople, and micro-business owners",
+      "estimatedDuration": "8–12 weeks",
+      "officialLink": "https://www.churchofjesuschrist.org/self-reliance",
+      "focusArea": "Small Business & Trades",
+      "deliveryFormat": "Practical business plan"
+    },
+    {
+      "id": "res-08",
+      "step": 4,
+      "category": "Education & Skills",
+      "title": "Education for Better Work & Technical Upskilling",
+      "description": "Select high-value certificates or vocational courses with clear timelines, costs, and completion dates.",
+      "eligibility": "Students and workers pursuing credentials or technical skills",
+      "estimatedDuration": "1–6 months",
+      "officialLink": "https://www.churchofjesuschrist.org/self-reliance",
+      "focusArea": "Education & Training",
+      "deliveryFormat": "Course & milestone plan"
+    }
   ]
 }

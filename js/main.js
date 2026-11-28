@@ -12,6 +12,7 @@ import {
   renderNeedsSummary,
   renderBudgetSummary,
   renderResourcesSummary,
+  renderStepResourceCatalog,
   renderExecutiveSummary,
   createHouseholdRowElement,
   createCustomExpenseRowElement,
@@ -62,12 +63,47 @@ class SelfRelianceApp {
     const initialStep = Number.isInteger(savedState?.currentStep) ? savedState.currentStep : 0;
     this.wizard.goToStep(initialStep, { scrollToTop: false });
 
-    await this.loadExternalTips();
+    await Promise.all([
+      this.loadExternalTips(),
+      this.loadResourceCatalog()
+    ]);
   }
 
   async loadExternalTips() {
     const tips = await this.externalServices.getReflectionTips();
     this.wizard.setTips(tips);
+  }
+
+  async loadResourceCatalog() {
+    let catalog = null;
+
+    try {
+      const res = await fetch("./data/resources.json", { cache: "no-store" });
+      if (res.ok) {
+        catalog = await res.json();
+      }
+    } catch (err) {
+      console.error("Error loading local resource catalog:", err);
+    }
+
+    if (!catalog && typeof this.externalServices.loadLocalCatalog === "function") {
+      catalog = await this.externalServices.loadLocalCatalog();
+    }
+
+    const items = Array.isArray(catalog?.resourceCatalog)
+      ? catalog.resourceCatalog
+      : Array.isArray(catalog)
+        ? catalog
+        : [];
+
+    renderStepResourceCatalog(
+      3,
+      items.filter((item) => Number(item.step) === 3)
+    );
+    renderStepResourceCatalog(
+      4,
+      items.filter((item) => Number(item.step) === 4)
+    );
   }
 
   resetPlan() {
@@ -78,7 +114,6 @@ class SelfRelianceApp {
     this.storage.clearPlan();
     this.wizard.finalized = false;
 
-    // Reset standard inputs, selects, and textareas outside print template
     document.querySelectorAll("input[id], select[id], textarea[id]").forEach((el) => {
       if (el.closest("#official-print-document")) return;
 
@@ -93,7 +128,6 @@ class SelfRelianceApp {
       }
     });
 
-    // Restore single blank row in dynamic tables and clear custom expense rows
     const householdTbody = document.querySelector("#s0-household-tbody");
     if (householdTbody) {
       householdTbody.innerHTML = "";
